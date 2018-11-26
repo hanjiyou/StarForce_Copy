@@ -163,7 +163,7 @@ namespace UnityGameFramework.Runtime
             }
         }
         /// <summary>
-        /// 游戏框架租价初始化
+        /// 游戏框架组件初始化
         /// </summary>
         protected override void Awake()
         {
@@ -207,7 +207,9 @@ namespace UnityGameFramework.Runtime
         {
             
         }
-
+        /// <summary>
+        /// 轮询的开端
+        /// </summary>
         private void Update()
         {
             GameFrameworkEntry.Update(Time.deltaTime, Time.unscaledDeltaTime);
@@ -257,6 +259,11 @@ namespace UnityGameFramework.Runtime
             }
 
             GameSpeed = 1f;
+        }
+
+        internal void Shutdown()
+        {
+            Destroy(gameObject);
         }
         private void InitVersionHelper()
         {

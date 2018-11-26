@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace UnityGameFramework.Runtime
 {
@@ -65,8 +67,56 @@ namespace UnityGameFramework.Runtime
             BaseComponent baseComponent = GetComponent<BaseComponent>();
             if (baseComponent != null)
             {
-//                baseComponent.s
+                baseComponent.Shutdown();
+                baseComponent = null;
             }
+            s_GameFrameworkComponents.Clear();
+            if (shutdownType == ShutdownType.None)
+            {
+                return;
+            }
+
+            if (shutdownType == ShutdownType.Restart)
+            {
+                SceneManager.LoadScene(GameFrameworkSceneId);
+                return;
+            }
+
+            if (shutdownType == ShutdownType.Quit)
+            {
+                Application.Quit();
+#if UNITY_EDITOR
+                UnityEditor.EditorApplication.isPlaying = false;
+#endif
+                return;
+            }
+        }
+        /// <summary>
+        /// 注册游戏框架组件到单链表中
+        /// </summary>
+        /// <param name="gameFrameworkComponent">要注册的框架组件</param>
+        internal static void RegesterComponent(GameFrameworkComponent gameFrameworkComponent)
+        {
+            if (gameFrameworkComponent == null)
+            {
+                Log.Error("Game Framework component is invalid.");
+                return;
+            }
+
+            Type type = gameFrameworkComponent.GetType();
+            LinkedListNode<GameFrameworkComponent> current = s_GameFrameworkComponents.First;
+            while (current!=null)
+            {
+                if (current.Value.GetType() == type)
+                {
+                    Log.Error("Game Framework component type '{0}' is already exist.", type.FullName);
+                    return;
+                }
+
+                current = current.Next;
+            }
+
+            s_GameFrameworkComponents.AddLast(gameFrameworkComponent);
         }
     }
 }
