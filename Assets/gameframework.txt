@@ -1,0 +1,221 @@
+基础知识:
+1.partial关键词修饰局部类，其中一个类文件继承MB,别的文件都能使用MB的生命周期方法
+2.通过csc生成类库步骤
+(1)搭建C#环境(csc命令)
+① c:\WINDOWS\Microsoft.NET\Framework\配置path变量
+(2)csc命令
+①当前文件夹下 csc /target:library Person.cs;  用于生成dll
+②csc Program.cs  默认用于生成exe文件
+③依赖别的类库进行打包成dll:
+csc -r:E:\SoftWareInstall\UnityInstall\Unity2018\Unity\Editor\Data\Managed/UnityEngine.dll -target:library MyDebug.cs;
+3.unity项目中的dll
+①我们自己定义的普通cs文件会被打入Assembly-CSharp.dll中
+②放在Plugins下的cs文件会被打入Assembly-CSharp-firstpass.dll中
+(3.1)unity编译顺序如下①Plugins ②Plugins/Editor ③其他不在Plugins ④其他Editor
+4.获取指定程序集下指定类的所有子类
+①Assembly temAssembly=Assembly.Load(assemName)
+②获取指定程序集下的所有类型:Type[]= temAssembly.GetTypes();
+③根据给定的type进行判断
+ type.IsClass():是否是类
+ typeBase.IsAssignableFrom(type):type是否继承(或间接继承)或实现类
+ type.IsSubClassOf(typeBase) type是否是base的子类
+ type.FullName: 当前指定type的类名
+5.[Conditional("MyDefine")]
+(1)这个是专门为方法声明的特性
+(2)根据宏是否被定义而进行调用
+(3)区分大小写
+6.Editor总结
+(1)普通的Editor直接使用[MenuItem]特性指定静态方法，会在菜单栏生成自定义的选项
+(2)控制Inspector监视面板的Editor:
+ 1)步骤:
+ ①Editor类引用特性[CustomEditor(typeof(TargetClass))]
+ ②OnEnable() 目标类显示在监视面板上回马上执行一次
+ ③OnInspectorGUI() 监视面板刚显示或者发生交互时会调用
+ ④SerializedProperty 重新定义所有想要显示在监视面板的MB中的属性
+ 2)各种单独的组件(EditorGUILayout):
+ ①浮点型的滑动条:EditorGUILayout.Slider(sp,leftNum,rightNum)
+ ②加黑的标签: EditogGUILayout.LabelField(labelText,EditorStyles.boldLabel)
+ ③带标签的输入框: EditorGUILayout.TextField(label,inputStringField)
+ ④下拉框 : newIndex=EditorGUILayout.Popup("列表标签",selectIndex,string[])
+ ⑤复选框:  newSelectStatus=Toggle/ToggleLeft(label,isSelected)
+ ⑥分割: EditorGUILayout.Separator()
+ ⑦根据序列化属性来自动生成对应不同类型的组件:EditorGUILayout.PropertyField(sp)
+ 3)布局组件:
+ ①开启一个矩形垂直的布局组件:
+ EditorGUILayout.BeginVertical("box"){布局组件的具体内容} EGL.EndVertical()
+ ②根据输入条件控制是否能操作:如果正在运行 组件就不可操作
+ EditorGUI.BeginDisabledGroup(EditorApplication.isPalying){} EG.End();
+ ③设置滑动区域 EGL.BeginScrollView(){}  end
+ 4)序列化字段SP的使用
+ ①在MB中对应字段如果是私有的，需要加上[SerializeField]特性
+ ②序列化属性在Editor中通过serializedObject.FindProperty()对象获取
+ ③如果是数组，则可以:sOP.arrySize获取长度、ClearArray()清空数组、InsertArrayElementAtIndex(i)插入格子、GetArrayElementAtIndex(i).stringValue为格子的string赋值
+7.使用Activator动态创建类类型实例
+①根据指定的程序集(不需要.dll后缀)和类型字符串，ObjectHandle h=Activator.CreateInstance("UnityGameFramework.Runtime","Son1"), TargetClass=h.Unwrap() as TargetClass;
+②通过该方法创建管理器对象，会执行对应的构造函数，但是不会触发断点
+
+8.?使用规则
+(1)可空类型修饰符: ?
+平常定义的变量引用类型可使用空引用，而值类型通常不能表示为空，会报错。而使用?
+ 定义变量就使得值类型也可为空，本质是编译器编译时会把T？编译成System. Nullable的形式
+(2)三元运算符: ?:
+(3)空合并运算符: ??
+①用于定义可空类型和引用类型的默认值。如a??b,如果a!=null，则返回a，否则返回b。
+②为右结合运算符，即操作时从右向左进行组合。如a??b??c,按照a??(b??c)计算
+(4)调用运算符?.
+MyObj obj=new MyObj();
+9.IEnumerable和IEnumerator的用法
+(1)IEnumerable接口有个返回IEnumerator引用的GetEnumerator()的方法     只有实现IEnumerable接口并重写GetEnumerator()方法  只能通过重写该方法才能使用foreach去遍历
+(2)一个类型是否支持foreach遍历，必须满足下面条件：
+方案1：让这个类实现IEnumerable接口
+方案2：这个类有一个public的GetEnumerator的实例方法，并且返回类型中有public 的bool MoveNext()实例方法和public的Current实例属性。
+10.委托
+(1)Action:定义的是返回值为空的委托，参数可为0-4个
+(2)Function:定义一个带返回值的委托，参数为0-4个
+无论委托还是事件，都得先定义委托(地位等于类) public delegate void MyDelegate(int)
+(1)委托与事件的区别
+①委托可根据权限进行赋值和调用，
+②事件能根据权限进行赋值，只能在所属类中调用
+③事件如果改成属性访问器样式 event Myevent{add;remove}，则只能+=或-=，无论在哪
+都不能直接执行
+(2)通过定义私有委托对象和共有事件属性访问器(对委托进行绑定解绑函数)
+，我们可以设置仅仅在外界进行绑定，内部执行回调
+11.Queue队列和Statck栈的区别
+(1)Queue 先进先出(可以看成单向路)
+①Enqueue(obj):将obj添加到队列末尾
+②Obj Dequeue():从队列中删除并返回队首
+③Obj Peek():获取队首对象
+④Obj[]ToArray():将队列复制到新数组中
+⑤TrimToSize() 将容量设为Queue中元素的实际数目
+(2)Statck 后入先出(可以看成桶)
+12.枚举类型加上[Flags]特性，表示该枚举支持位运算，其内元素最好按照2的n次方递增，
+ ①'|'表示相加
+ ②a&(~b)表示相减
+
+13.字典与List的使用和关联
+(1)Dictionary的用法
+①按照key的值:dir[n]=value 相当于Add(n,value)
+②根据下标: dir.ElementAt(n).key/value是只读的，无法修改 想修改指定下标的值可以
+dir[dir.ElementAt(n).key]
+③深拷贝与浅拷贝
+ 深拷贝 开辟空间并拷贝原来的值，比较地址返回false
+ 浅拷贝 不开辟空间 只是新建一个指向原地址的引用,直接用"=="比较字典名(本质是地址)
+ 返回true
+(2)List用法
+①list[i]:i是下标
+②ElementAt(i) 也是下标
+(3)Linq排序
+按照value的level属性进行降序排列并再返回一个字典
+ dict=dict.OrderByDescending(item => item.Value.level).ToDictionary(p => p.Key, o => o.Value);
+ 14.枚举
+(1)做位标志进行位运算(从0开始赋值,1,2,4)
+①要使枚举类型具有位运算的能力，需要添加Flags特性
+②枚举进行&、|、~转成二进制进行位运算
+
+15.特性
+(1)基础 定义:给指定的某一声明的一则附加的声明性信息对程序中的元素进行标注，如类型、字段、
+方法、属性等。.net角度看特性是一种类，这些类继承于System.Attribute类，主要用在反射中；从面向对象级别看，是类型级别的。
+ 作用:①运行时描述代码，或者影响程序的行为
+②处理序列化、程序安全特性等
+(2)
+ 1)自带特性
+注:特性类在编译的时候实例化，而不是通常那样运行时实例化
+①Conditional:条件编译，满足条件才允许编译器对代码进行编译，一般用于程序调试
+②DllImport:标记非.net函数，即在外部DLL中定义
+③Obsolete:标记当前方法被废弃
+
+16.EventSystem
+ UGUI的EventSystem中，有很多事件接口，其中最常用的是IPointerClickHandler,
+ IPointerDownHandler,IPointerUpHandler，其中Up重写的方法必须同时又Click时，才会执行且先执行；Down重写的方法可自己直接执行
+(1)防止点击穿透，即如果点击UI则不会触发模型的点击事件:if(EventSystem.current.IsPointerOverGameObject()){return;}
+ IsPointerOverGameObject() 判断点击是否在UI对象上，是则返回true
+①无参时判断对象为鼠标左键(pointerId=-1)
+②有参时判断对象为手指Touch点击 参数应该为:Input.GetTouch(0).fingerId
+
+17.发射射线的3种方式
+(1)一般用于与3D场景 模型进行点击操作时使用(有碰撞器的时候才会触发命中)
+Ray r=camera.ScreenPointToRay(Input.mousePosition)
+RaycastHit rh,
+if(Physics.Raycast(ray, out raycastHit)){ rh.transform}
+(2)一般用于检测命中的UI部分，无法获取到带碰撞体的模型
+①使用PointerEventData 初始化点击位置 ped.position=Input.mousePosition
+②EventSystem.current.RaycastAll(ped,results)
+(3)使用PointerEventData和GraphicRaycaster.Raycast(ped,result)，功能同2
+
+                                 二.框架模块详解
+1.Component详解(都属于MB的子类，能使用MB的生命周期方法)
+(1)GameFrameworkComponent,一切Component的基类，继承了MB,Awake()方法中将自身注册到GameEntry中
+①是所有模块的组件Component的基类，其基类是GameFrameworkComponent(继承了MB，awake()中会调用GameEntry.RegisterComponent()把自身注册到LinkedList
+<GameFrameworkComponent>集合中)我们也可以通过GameEntry
+来获取每个模块对应的Component
+(2)BaseComponent(轮询的开端 mb的update在此处)
+Awake()方法中初始化各种Helper
+Update()方法，循环调用GameFrameworkEntry.Update()方法
+(3)每个模块的Component
+①Awake()中注册自身的Component，然后获取当前模块的Manager接口
+②Start()
+  1)流程组件:获取所有选中的序列化的流程名，从Appdomain中根据流程名获取对应Type，
+动态创建实例，然后Manager.Initialize()和Manager.StartProcedure()方法
+(4)模块Component管理类:GameEntry
+用于注册和获取所有模块的Component组件，里面有注册和获取指定type的component的方法
+
+
+2.Manager详解(Manager脱离了u3d,不属于MB的子类)
+(1)管理器基类 抽象类GameFrameModule(GFM)
+①所有模块的管理器Manager的基类 有Update()和Shutdown抽象方法
+②里面含有internal权限的Priority(优先级)
+(2)管理器管理类 静态类GameFrameworkEntry使用链表LinkedList<GFM>存储所有管理器实现的接口(注意是接口，这样更加多态化)
+ ①有获取游戏框架模块的静态方法GetModule<T>()，先遍历链表中是否已经添加，没有则创建并根据优先级添加到链表中，有则直接返回
+(3)Manager不是通过构造函数创建的，而是通过(2)GFE创建并统一管理的
+3.Procedure流程详解(状态FsmState的子类)
+(1)流程基类 ProcedureBase,PB的基类是FsmState<IProcedureManager>，即状态机的
+状态基类，T是状态机持有者且该状态的
+(2)
+每个自定义的流程都需要继承ProcedureBase类
+4.FSM状态机详解
+(1)状态机管理器 FSMManager
+①在ProcedureComponent.Start()中，调用PM.Initalize(IFsmMan,ProcedureBase)方法，
+该方法调用FsmManager.CreateFSM<T>来创建并返回一个FSM状态机，该状态机所有者是IPM
+，内部状态是
+(2)FSM状态机类
+①构造函数
+通过创建一个状态机时:FSM(name,T owner,FsmState[])，会把形参状态数组
+添加到m_States状态字典中，然后调用每个状态的OnInit()方法
+②
+
+5.分析从流程到FSM中Update的调用流程
+(1)自定义Procedure->流程基类ProcedureBase(5种生命周期方法OnInit,OnEnter,OnUpdate
+,OnLeave,OnDestory)->有限状态机状态基类FsmState<IProcedureManager>(5中生
+命周期以及ChangeState方法)
+(2)ProcedureBase5种生命周期方法调用时机
+①OnInit()
+FsmManage.CreateFSM()->Fsm()构造函数中，调用当前状态机所有状态的OnInit
+方法
+②OnEnter()
+    初始流程会在ProcedureComponent.Start()调用->PM.StartProcedure()调用
+->Fsm的Start()调用->state.OnEnter()
+    切换流程的OnEnter()会在FsmState.ChangeState()//普通保护类型方法中被调用
+调用->Fsm.ChangeState()老流程调用OnLeave，新流程调用->OnEnter();
+③Update()
+PB->Fsm->FsmManager->管理器管理类GameFrameworkEntry.Update
+->BaseComponent.Update()
+④OnLeave()
+(3)调用ChangeState()切换流程的执行过程
+自定义Procedure 执行ChangeState()->FsmState的ChangeState<目标状态>(当前状态机)
+->通过当前fsm调用Fsm.ChangeState<目标状态>->老状态OnLeave,新流程OnEnter
+
+6.Event事件机制
+(1)事件
+①EventArgs(包含事件数据的类的基类)的封装和使用
+抽象类GameEventArgs(u3d直接使用的args类一般都继承自此处)->BaseEventArgs+抽象id
+->GameFrameworkEventArgs(大部分事件继承该抽象类)->系统类EventArgs
+②事件手柄(委托)
+EventHandler<T>(obj,T),该手柄对应的方法是:void Method(object sender,TEventArgs)
+(2)订阅事件的流程
+EventComponent.Subscribe调用->EventManager.Subscribe调用->EventPool.dic.Add()
+注意：添加时，如果不存在当前key，就直接添加k和v；如果存在，则直接
+eventHandler+=handler
+(3)触发订阅事件的流程
+
+7.ObjectPoolManager
+
