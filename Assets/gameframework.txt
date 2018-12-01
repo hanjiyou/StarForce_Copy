@@ -97,6 +97,8 @@ dir[dir.ElementAt(n).key]
 (1)忽略转移字符 str=@"D:\文本"
 (2)让字符串跨行
 (3)C#不允许关键字作为标识符，但加上@后可以
+
+17.接口中可以包含方法和属性(普通属性访问器或者事件)，不可以包含字段
                               unity相关总结:
 1.EventSystem
  UGUI的EventSystem中，有很多事件接口，其中最常用的是IPointerClickHandler,

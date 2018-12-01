@@ -2,6 +2,8 @@
 # Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnityGameFramework.Runtime", "UnityGameFramework.Runtime.csproj", "{865C9699-018D-1634-D277-81B1584C1307}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp", "Assembly-CSharp.csproj", "{C2589D42-8AD2-EE72-EC5F-4909072C7550}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,6 +14,10 @@ Global
 		{865C9699-018D-1634-D277-81B1584C1307}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{865C9699-018D-1634-D277-81B1584C1307}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{865C9699-018D-1634-D277-81B1584C1307}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C2589D42-8AD2-EE72-EC5F-4909072C7550}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C2589D42-8AD2-EE72-EC5F-4909072C7550}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C2589D42-8AD2-EE72-EC5F-4909072C7550}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C2589D42-8AD2-EE72-EC5F-4909072C7550}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

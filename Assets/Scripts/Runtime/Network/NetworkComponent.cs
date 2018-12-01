@@ -33,8 +33,12 @@ namespace UnityGameFramework.Runtime
                 Log.Fatal("Network manager is invalid.");
                 return;
             }
-//            this.m_NetworkManager.NetworkConnected
+
+            this.m_NetworkManager.NetworkConnected += this.OnNetworkConnected;
         }
-        
+        private void OnNetworkConnected(object sender, GameFramework.Network.NetworkConnectedEventArgs e)
+        {
+            m_EventComponent.Fire(this, ReferencePool.Acquire<NetworkConnectedEventArgs>().Fill(e));
+        }
     }
 }
