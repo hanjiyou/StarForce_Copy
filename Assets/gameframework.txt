@@ -212,10 +212,10 @@ PB->Fsm->FsmManager->管理器管理类GameFrameworkEntry.Update
 ->通过当前fsm调用Fsm.ChangeState<目标状态>->老状态OnLeave,新流程OnEnter
 
 6.Event事件机制
-(1)事件
+(1)事件参数与事件手柄
 ①EventArgs(包含事件数据的类的基类)的封装和使用
-抽象类GameEventArgs(u3d直接使用的args类一般都继承自此处)->BaseEventArgs+抽象id
-->GameFrameworkEventArgs(大部分事件继承该抽象类)->系统类EventArgs
+抽象类GameEventArgs(u3d直接使用的args类一般都继承自此处)->BaseEventArgs+抽象id+IReference引用接口的Clear()->GameFrameworkEventArgs(gf.dll内的源码大部分事件继承
+该抽象类)->系统类EventArgs
 ②事件手柄(委托)
 EventHandler<T>(obj,T),该手柄对应的方法是:void Method(object sender,TEventArgs)
 (2)订阅事件的流程

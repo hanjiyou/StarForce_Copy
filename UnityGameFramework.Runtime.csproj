@@ -59,9 +59,16 @@
     <Compile Include="Assets\Scripts\Runtime\Base\GameEntry.cs" />
     <Compile Include="Assets\Scripts\Runtime\Base\GameFrameworkComponent.cs" />
     <Compile Include="Assets\Scripts\Runtime\Base\ShutdownType.cs" />
-    <Compile Include="Assets\Scripts\Runtime\EventComponent\EventComponent.cs" />
+    <Compile Include="Assets\Scripts\Runtime\Event\EventComponent.cs" />
     <Compile Include="Assets\Scripts\Runtime\Fsm\FsmComponent.cs" />
+    <Compile Include="Assets\Scripts\Runtime\Network\NetworkClosedEventArgs.cs" />
+    <Compile Include="Assets\Scripts\Runtime\Network\NetworkComponent.cs" />
+    <Compile Include="Assets\Scripts\Runtime\Network\NetworkConnectedEventArgs.cs" />
+    <Compile Include="Assets\Scripts\Runtime\Network\NetworkCustomErrorEventArgs.cs" />
+    <Compile Include="Assets\Scripts\Runtime\Network\NetworkErrorEventArgs.cs" />
+    <Compile Include="Assets\Scripts\Runtime\Network\NetworkMissHeartBeatEventArgs.cs" />
     <Compile Include="Assets\Scripts\Runtime\ObjectPool\ObjectPoolComponent.cs" />
+    <Compile Include="Assets\Scripts\Runtime\Procedure\ProcedureComponent.cs" />
     <Compile Include="Assets\Scripts\Runtime\Utility\Log.cs" />
     <None Include="Assets\Scripts\Runtime\UnityGameFramework.Runtime.asmdef" />
     <Reference Include="UnityEngine.AIModule">

@@ -947,5 +947,84 @@ namespace UnityGameFramework.Runtime.ObjectPool
         {
             return m_ObjectPoolManager.CreateMultiSpawnObjectPool(objectType, name, autoReleaseInterval, capacity, expireTime, priority);
         }
+           /// <summary>
+        /// 销毁对象池。
+        /// </summary>
+        /// <typeparam name="T">对象类型。</typeparam>
+        /// <returns>是否销毁对象池成功。</returns>
+        public bool DestroyObjectPool<T>() where T : ObjectBase
+        {
+            return m_ObjectPoolManager.DestroyObjectPool<T>();
+        }
+
+        /// <summary>
+        /// 销毁对象池。
+        /// </summary>
+        /// <param name="objectType">对象类型。</param>
+        /// <returns>是否销毁对象池成功。</returns>
+        public bool DestroyObjectPool(Type objectType)
+        {
+            return m_ObjectPoolManager.DestroyObjectPool(objectType);
+        }
+
+        /// <summary>
+        /// 销毁对象池。
+        /// </summary>
+        /// <typeparam name="T">对象类型。</typeparam>
+        /// <param name="name">要销毁的对象池名称。</param>
+        /// <returns>是否销毁对象池成功。</returns>
+        public bool DestroyObjectPool<T>(string name) where T : ObjectBase
+        {
+            return m_ObjectPoolManager.DestroyObjectPool<T>(name);
+        }
+
+        /// <summary>
+        /// 销毁对象池。
+        /// </summary>
+        /// <param name="objectType">对象类型。</param>
+        /// <param name="name">要销毁的对象池名称。</param>
+        /// <returns>是否销毁对象池成功。</returns>
+        public bool DestroyObjectPool(Type objectType, string name)
+        {
+            return m_ObjectPoolManager.DestroyObjectPool(objectType, name);
+        }
+
+        /// <summary>
+        /// 销毁对象池。
+        /// </summary>
+        /// <typeparam name="T">对象类型。</typeparam>
+        /// <param name="objectPool">要销毁的对象池。</param>
+        /// <returns>是否销毁对象池成功。</returns>
+        public bool DestroyObjectPool<T>(IObjectPool<T> objectPool) where T : ObjectBase
+        {
+            return m_ObjectPoolManager.DestroyObjectPool(objectPool);
+        }
+
+        /// <summary>
+        /// 销毁对象池。
+        /// </summary>
+        /// <param name="objectPool">要销毁的对象池。</param>
+        /// <returns>是否销毁对象池成功。</returns>
+        public bool DestroyObjectPool(ObjectPoolBase objectPool)
+        {
+            return m_ObjectPoolManager.DestroyObjectPool(objectPool);
+        }
+        /// <summary>
+        /// 释放对象池中的可释放对象。
+        /// </summary>
+        public void Release()
+        {
+            Log.Info("Object pool release...");
+            m_ObjectPoolManager.Release();
+        }
+
+        /// <summary>
+        /// 释放对象池中的所有未使用对象。
+        /// </summary>
+        public void ReleaseAllUnused()
+        {
+            Log.Info("Object pool release all unused...");
+            m_ObjectPoolManager.ReleaseAllUnused();
+        }
     }
 }

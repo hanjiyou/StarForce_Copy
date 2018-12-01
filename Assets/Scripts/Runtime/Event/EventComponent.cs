@@ -4,7 +4,7 @@ using GameFramework.Event;
 using UnityEngine;
 using UnityGameFramework.Runtime;
 
-namespace Runtime.EventComponent
+namespace UnityGameFramework.Runtime
 {
     /// <summary>
     /// 事件组件
