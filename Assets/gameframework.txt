@@ -228,3 +228,13 @@ eventHandler+=handler
 
 7.ObjectPoolManager
 
+8.Network
+(1)NetworkManager(继承GFM抽象类 实现了INetworkManager接口)网络管理类
+ (1 成员:
+ 	①m_NetworkChannels<string,NetworkChannel> Key对应频道的name value是频道对象 用于存储所有的频道
+ 	②EventHanlder委托类型的连接、关闭、丢失心跳、错误、自定义错误5中实现自接口的event事件 这些事件
+ 	赋值是在NetworkComponent的Awake中 运行是在频道的5个对应回调绑定的方法内运行 (回调)
+ 	3创建频道、获取频道、判断频道是否存在、获取当前所有频道、销毁频道
+ 	④步骤②中的5个event事件对应的回调方法，创建频道时添加到频道中对应的GameFrameworkAction委托
+ 	 销毁频道时解绑
+(2)NetworkManager.NetworkChannel网络频道类(实现了INetworkChannel、IDisposable接口)
