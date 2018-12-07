@@ -58,6 +58,7 @@
     <Compile Include="Assets\Test\IMyEventListener.cs" />
     <Compile Include="Assets\Test\MyEvent.cs" />
     <Compile Include="Assets\Test\MyEventArgs.cs" />
+    <Compile Include="Assets\Test\TestMyEvent.cs" />
     <None Include="Assets\Libraries\link.xml" />
     <None Include="Assets\Libraries\GameFramework.xml" />
     <None Include="Assets\gameframework.txt" />
