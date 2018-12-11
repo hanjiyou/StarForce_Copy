@@ -267,6 +267,7 @@ eventHandler+=handler
 .EndConnect(ar) 接收和发送数量置为0 重置心跳状态 并调用当前频道的NetworkChannelConnected
 委托
 ④调用Receive()
+
  Receive:(r.s意思是recState.Stream)
 ①m_Socket.BeginReceive(r.s.GetBuffer(),r.s.pos,r.s.l-r.s.pos,SocketFlag.None,
 new AsyncCallback(ReceiveCallback),m_Socket)
@@ -276,5 +277,9 @@ new AsyncCallback(ReceiveCallback),m_Socket)
 为空(初次)则处理包头(ProcessPacketHeader())，否则处理包体(ProcessPacket())
 ③ProcessPacketHeader() 使用频道辅助类反序列化接收流中的包头以及自定义错误数据，如果有错
 则停止，否则接收流预备处理包体(r.PrepareForPacket(packetHeader))
+
+整体流程:首先Connect的时候调用 PrepareForPacketHeader()初始化包头即包体长度
+①socket异步接收 ②接收回调 如果rs的包头接口为空(初次)则调用 ProcessPacketHeader()会反
+序列化接受流得到包头接口然后赋值给rs ③再次接受->回调->包头不为空则 ProcessPacket()
 
 注意:socket的所有异步操作beginXXX(IAsyncResult ar)，ar是回调传递来的结果
