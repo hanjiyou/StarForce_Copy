@@ -40,5 +40,6 @@ namespace UnityGameFramework.Runtime
         {
             m_EventComponent.Fire(this, ReferencePool.Acquire<NetworkConnectedEventArgs>().Fill(e));
         }
+        //TODO NetworkComponent有待完善
     }
 }

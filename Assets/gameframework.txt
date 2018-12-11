@@ -99,6 +99,21 @@ dir[dir.ElementAt(n).key]
 (3)C#不允许关键字作为标识符，但加上@后可以
 
 17.接口中可以包含方法和属性(普通属性访问器或者事件)，不可以包含字段
+18.MemorySteam详解
+(1)Flush()函数
+使用流写文件时，数据流会先进入到缓冲区中，而不会立刻写入文件，当执行这个方法后，缓冲区
+的数据流会立即注入基础流，此方法确保首先将数据刷新至基础流然后再将其写入文件
+(2)Length:表示流中实际数据的长度(也可能是通过SetLength()设置数据长度方法修改)
+(3)Position:流中当前索引的位置，受很多因素影响：读写会等于实际数据的最新位置；
+也可以Seek()直接设定强制改变当前索引；SetLength()如果长度小于当前数据的实际长度也会改变，
+且此时会有dirty_bytes，大于不会改变
+(3.1)SetLength():修改流中实际数据的长度
+①SetLength()不能超过Capacity否则报错
+①SetLength()如果长度小于当前数据的实际长度会改变position，且此时会有dirty_bytes，
+大于不会修改position，只会修改Length
+(4)Capacity:当前缓冲区大小，只能通过构造函数或者Capacity属性赋值
+(5)GetBuffer():返回当前内存流整个缓冲区的数据，包括那些分配了但是并没有用到的字节数据
+(5)Close()关闭流并释放资源
                               unity相关总结:
 1.EventSystem
  UGUI的EventSystem中，有很多事件接口，其中最常用的是IPointerClickHandler,
@@ -231,10 +246,35 @@ eventHandler+=handler
 8.Network
 (1)NetworkManager(继承GFM抽象类 实现了INetworkManager接口)网络管理类
  (1 成员:
- 	①m_NetworkChannels<string,NetworkChannel> Key对应频道的name value是频道对象 用于存储所有的频道
- 	②EventHanlder委托类型的连接、关闭、丢失心跳、错误、自定义错误5中实现自接口的event事件 这些事件
- 	赋值是在NetworkComponent的Awake中 运行是在频道的5个对应回调绑定的方法内运行 (回调)
- 	3创建频道、获取频道、判断频道是否存在、获取当前所有频道、销毁频道
- 	④步骤②中的5个event事件对应的回调方法，创建频道时添加到频道中对应的GameFrameworkAction委托
- 	 销毁频道时解绑
+①m_NetworkChannels<string,NetworkChannel> Key对应频道的name value是频道对象 用于存储所有的频道
+②EventHanlder委托类型的连接、关闭、丢失心跳、错误、自定义错误5中实现自接口的event事件 这些事件
+赋值是在NetworkComponent的Awake中 运行是在频道的5个对应回调绑定的方法内运行 (回调)
+③创建频道、获取频道、判断频道是否存在、获取当前所有频道、销毁频道
+④步骤②中的5个event事件对应的回调方法，创建频道时添加到频道中对应的GameFrameworkAction委托
+ 销毁频道时解绑
 (2)NetworkManager.NetworkChannel网络频道类(实现了INetworkChannel、IDisposable接口)
+ (1 成员:
+①变量:默认心跳时间间隔(30s) 频道名 发送包池(Queue) 接收包池(EventPool) 频道帮助类实际心跳间隔
+网络类型(UnKnow) 频道socket套接字 三种自定义状态(SendState、ReceiveState、HeartBeatState)
+5个自定义Action(连接、关闭、丢失心跳、错误、自定义错误)
+ (2 流程:
+ Connect:
+①构造函数初始化上面的成员变量
+②Connect(ip,port,object)方法 创建socket赋值给m_Socket 并重置发送状态、接收状态为包头准备，
+最终m_Socket.BeginConnect(ip,port,new AsyncCallback(ConnectCallBack),ConnectState)
+开始异步链接，异步回调是ConnectCallBack，object是ConnectState
+③在连接异步回调ConnnectCallBack(IAsyncResult ar),首先关闭连接ar.AsyncState.Socket
+.EndConnect(ar) 接收和发送数量置为0 重置心跳状态 并调用当前频道的NetworkChannelConnected
+委托
+④调用Receive()
+ Receive:(r.s意思是recState.Stream)
+①m_Socket.BeginReceive(r.s.GetBuffer(),r.s.pos,r.s.l-r.s.pos,SocketFlag.None,
+new AsyncCallback(ReceiveCallback),m_Socket)
+②接收回调ReceiveCallback(IAsyncResult)中 关闭接收ar.AyyncState.EndReceive(ar)会返回本次
+接收的数据长度num，捕获异常有异常则停止执行，没有异常则对r.s.p累加num。如果接收流的当前
+位置小于流的容量 调用Receive()，否则接收包数量++，接收流位置归0。如果接收状态的包头接口
+为空(初次)则处理包头(ProcessPacketHeader())，否则处理包体(ProcessPacket())
+③ProcessPacketHeader() 使用频道辅助类反序列化接收流中的包头以及自定义错误数据，如果有错
+则停止，否则接收流预备处理包体(r.PrepareForPacket(packetHeader))
+
+注意:socket的所有异步操作beginXXX(IAsyncResult ar)，ar是回调传递来的结果
