@@ -14,7 +14,7 @@ csc -r:E:\SoftWareInstall\UnityInstall\Unity2018\Unity\Editor\Data\Managed/Unity
 ②获取指定程序集下的所有类型:Type[]= temAssembly.GetTypes();
 ③根据给定的type进行判断
  type.IsClass():是否是类
- typeBase.IsAssignableFrom(type):type是否继承(或间接继承)或实现类
+ typeBase.IsAssignableFrom(type):type是否继承(或间接继承)或实现类/接口
  type.IsSubClassOf(typeBase) type是否是base的子类
  type.FullName: 当前指定type的类名
 
@@ -243,7 +243,7 @@ eventHandler+=handler
 
 
                               ugf的总结第二次
-1.EventManager相关讲解
+1. EventManager相关讲解
 (1) 成员变量
  事件池私有字段m_EventPool<GameEventArgs> 获取事件数量EventCount
  获取事件手柄数量EventHandlerCount Update()轮询 Check()检查是否存在事件 Subscribe()订阅事件
@@ -262,13 +262,30 @@ value是手柄单链表 根据不同事件池权限 会有不同的情况
 执行队首元素事件
 ②Subscribe(id,handler) 订阅事件处理函数,如果不存在id则直接添加，否则根据权限判断是添加还是
 抛出异常
-③Fire()抛出事件 该方法只是将事件添加到队列中  执行是在轮询中执行
+③Fire()抛出事件 该方法只是将事件添加到队列中  执行是在轮询中不断从队列取出队首
+调用Handleevent执行
 ④FireNow()立即抛出事件 直接调用HandleEvent
 ⑤HandleEvent(object,T)处理事件节点
+如果存在id 则执行该id对应的单链表存储的所有事件；如果不存在执行默认事件；如果权限不允许存在
+无手柄的情况则抛出异常；否则释放参数的引用
 
-2..ObjectPoolManager
+2. ObjectPoolManager
 
-3..Network
+3. ReferencePool引用池(RP是ReferencePool简称 ReferenceCollection引用集合)
+注意:引用池中的引用类型必须实现IReference接口
+(1)成员
+①IDictionary<string,RP.RC> key是引用类型type的fullName value是自定义的引用集合
+②GetAllReferencePoolInfos()获取所有引用池
+③ClearAll()清除所有引用池
+④Acquire 从引用池获取类型 会调用私有方法GetRC(fullName) 即根据fullName去字典中获取，
+不存在则新建引用并且添加到字典中，存在则直接返回。
+⑤Add<T> 向指定类型的引用追加一定数量
+3.1ReferenceCollection自定义引用集合
+(1)成员
+①Queue<IReference>引用队列
+②正在引用的数量 获取引用的数量 释放引用的数量 添加/移除引用的数量
+③Acquire() 从队列获取引用 如果队列数量>0则出列；否则通过Activator创建并返回
+4.Network
 (1)NetworkManager(继承GFM抽象类 实现了INetworkManager接口)网络管理类
  (1 成员:
 ①m_NetworkChannels<string,NetworkChannel> Key对应频道的name value是频道对象 用于存储所有的频道

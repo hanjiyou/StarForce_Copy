@@ -59,6 +59,9 @@
     <Compile Include="Assets\Scripts\Runtime\Base\GameEntry.cs" />
     <Compile Include="Assets\Scripts\Runtime\Base\GameFrameworkComponent.cs" />
     <Compile Include="Assets\Scripts\Runtime\Base\ShutdownType.cs" />
+    <Compile Include="Assets\Scripts\Runtime\DataNode\DataNodeComponent.cs" />
+    <Compile Include="Assets\Scripts\Runtime\DataTable\DataTableComponent.cs" />
+    <Compile Include="Assets\Scripts\Runtime\DataTable\DataTableHelperBase.cs" />
     <Compile Include="Assets\Scripts\Runtime\Event\EventComponent.cs" />
     <Compile Include="Assets\Scripts\Runtime\Fsm\FsmComponent.cs" />
     <Compile Include="Assets\Scripts\Runtime\Network\NetworkClosedEventArgs.cs" />
