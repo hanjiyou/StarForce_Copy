@@ -227,11 +227,10 @@ PB->Fsm->FsmManager->管理器管理类GameFrameworkEntry.Update
 (3)调用ChangeState()切换流程的执行过程
 自定义Procedure 执行ChangeState()->FsmState的ChangeState<目标状态>(当前状态机)
 ->通过当前fsm调用Fsm.ChangeState<目标状态>->老状态OnLeave,新流程OnEnter
-
-6.Event事件机制
+1.Event事件机制
 (1)事件参数与事件手柄
 ①EventArgs(包含事件数据的类的基类)的封装和使用
-抽象类GameEventArgs(u3d直接使用的args类一般都继承自此处)->BaseEventArgs+抽象id+IReference引用接口的Clear()->GameFrameworkEventArgs(gf.dll内的源码大部分事件继承
+抽象类GameEventArgs(u3d直接使用的args类一般都继承自此处)->BaseEventArgs(抽象id+IReference引用接口的Clear())->GameFrameworkEventArgs(gf.dll内的源码大部分事件继承
 该抽象类)->系统类EventArgs
 ②事件手柄(委托)
 EventHandler<T>(obj,T),该手柄对应的方法是:void Method(object sender,TEventArgs)
@@ -241,9 +240,35 @@ EventComponent.Subscribe调用->EventManager.Subscribe调用->EventPool.dic.Add(
 eventHandler+=handler
 (3)触发订阅事件的流程
 
-7.ObjectPoolManager
 
-8.Network
+
+                              ugf的总结第二次
+1.EventManager相关讲解
+(1) 成员变量
+ 事件池私有字段m_EventPool<GameEventArgs> 获取事件数量EventCount
+ 获取事件手柄数量EventHandlerCount Update()轮询 Check()检查是否存在事件 Subscribe()订阅事件
+ Fire()抛出事件 FireNow()立即抛出事件
+注意:上面的成员执行本质都是通过m_EventPool 比如轮询是调用m_EventPool.Update Fire是调用m.f
+Subscribe()是调用m.s
+1.2EventPool<T> T:BaseEventArgs
+(1) 成员变量
+①Dictionary<int,LinkedList<EventHandler<T>>> m_EventHandler 手柄字典 key是事件id(T.Id)
+value是手柄单链表 根据不同事件池权限 会有不同的情况
+②Queue<EventPool<T>.Event> m_Events 存储所有的事件队列
+③EventPoolMode m_EventPoolMode(枚举)事件池的权限
+④m_DefaultHandler 默认的事件手柄
+(2) 成员方法
+①Update轮询 每次轮询不断判断事件队列元素个数 >0就不断的移除队首元素并通过HandleEvent()
+执行队首元素事件
+②Subscribe(id,handler) 订阅事件处理函数,如果不存在id则直接添加，否则根据权限判断是添加还是
+抛出异常
+③Fire()抛出事件 该方法只是将事件添加到队列中  执行是在轮询中执行
+④FireNow()立即抛出事件 直接调用HandleEvent
+⑤HandleEvent(object,T)处理事件节点
+
+2..ObjectPoolManager
+
+3..Network
 (1)NetworkManager(继承GFM抽象类 实现了INetworkManager接口)网络管理类
  (1 成员:
 ①m_NetworkChannels<string,NetworkChannel> Key对应频道的name value是频道对象 用于存储所有的频道
@@ -283,3 +308,13 @@ new AsyncCallback(ReceiveCallback),m_Socket)
 序列化接受流得到包头接口然后赋值给rs ③再次接受->回调->包头不为空则 ProcessPacket()
 
 注意:socket的所有异步操作beginXXX(IAsyncResult ar)，ar是回调传递来的结果
+
+(3)ugf层以及gf层的NetworkConnect事件委托初始化以及运行的整体流程
+ ①INetworkManager中定义event事件NetworkConnected 被Network通过实现接口所继承 并设为了属性访问器NetworkConnected 该访问器访问的私有字段是m_NetworkConnectedEventHandler
+ ②步骤①中的委托真正执行是在OnNetworkChannelConnected()中，如果不为空则锁定执行
+ ③OnNetworkChannelConnected中的方法被绑定给了网络频道的框架委托NetworkChannelConnected
+ ④而网络频道类的NetworkChannelConnected是在连接回调中执行
+整体流程
+ 连接回调->执行网络频道委托NetworkChannelConnected->执行频道委托绑定的NetworkManager中的
+ OnNetworkChannelConnected方法，在该方法中 判断NM中的事件是否为空 不为空则执行事件访问器
+ 对应的字段->执行事件在NetworkComponent中绑定的最终回调OnNetworkConnected
