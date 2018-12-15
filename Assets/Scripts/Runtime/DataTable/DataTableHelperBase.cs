@@ -1,3 +1,4 @@
+using System;
 using GameFramework.DataTable;
 using UnityEngine;
 
@@ -6,21 +7,44 @@ namespace UnityGameFramework.Runtime
     /// <summary>
     /// 数据表辅助器基类
     /// </summary>
-    public class DataTableHelperBase:MonoBehaviour,IDataTableHelper
+    public abstract class DataTableHelperBase:MonoBehaviour,IDataTableHelper
     {
+        /// <summary>
+        /// 加载数据表
+        /// </summary>
+        /// <param name="dataTableAsset">数据表资源</param>
+        /// <param name="userData">用户自定义数据</param>
+        /// <returns>是否加载成功</returns>
         public bool LoadDataTable(object dataTableAsset, object userData)
         {
-            throw new System.NotImplementedException();
+            LoadDataTableInfo loadDataTableInfo = (LoadDataTableInfo) userData;
+            return LoadDataTable(loadDataTableInfo.DataRowType, loadDataTableInfo.DataTableName,
+                loadDataTableInfo.DataTableNameInType, dataTableAsset, userData);
         }
 
-        public string[] SplitToDataRows(string text)
-        {
-            throw new System.NotImplementedException();
-        }
+        /// <summary>
+        /// 将要解析的数据表文本分割为数据表行文本。
+        /// </summary>
+        /// <param name="text">要解析的数据表文本。</param>
+        /// <returns>数据表行文本。</returns>
+        public abstract string[] SplitToDataRows(string text);
 
-        public void ReleaseDataTableAsset(object dataTableAsset)
-        {
-            
-        }
+        /// <summary>
+        /// 释放数据表资源。
+        /// </summary>
+        /// <param name="dataTableAsset">要释放的数据表资源。</param>
+        public abstract void ReleaseDataTableAsset(object dataTableAsset);
+
+        /// <summary>
+        /// 加载数据表。
+        /// </summary>
+        /// <param name="dataRowType">数据表行的类型。</param>
+        /// <param name="dataTableName">数据表名称。</param>
+        /// <param name="dataTableNameInType">数据表类型下的名称。</param>
+        /// <param name="dataTableAsset">数据表资源。</param>
+        /// <param name="userData">用户自定义数据。</param>
+        /// <returns>加载是否成功。</returns>
+        protected abstract bool LoadDataTable(Type dataRowType, string dataTableName, string dataTableNameInType, object dataTableAsset, object userData);
+
     }
 }

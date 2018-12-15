@@ -59,6 +59,9 @@
     <Compile Include="Assets\Test\Event\MyEvent.cs" />
     <Compile Include="Assets\Test\Event\MyEventArgs.cs" />
     <Compile Include="Assets\Test\Event\TestMyEvent.cs" />
+    <Compile Include="Assets\Test\InterfaceAndAbstract\IMyInterfaceDemo3.cs" />
+    <Compile Include="Assets\Test\InterfaceAndAbstract\MyAbstractClassDemo3.cs" />
+    <Compile Include="Assets\Test\InterfaceAndAbstract\MyClassDemo3.cs" />
     <Compile Include="Assets\Test\MemoeySteam\TestMS.cs" />
     <None Include="Assets\Libraries\link.xml" />
     <None Include="Assets\Libraries\GameFramework.xml" />

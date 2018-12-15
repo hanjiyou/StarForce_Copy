@@ -62,6 +62,8 @@
     <Compile Include="Assets\Scripts\Runtime\DataNode\DataNodeComponent.cs" />
     <Compile Include="Assets\Scripts\Runtime\DataTable\DataTableComponent.cs" />
     <Compile Include="Assets\Scripts\Runtime\DataTable\DataTableHelperBase.cs" />
+    <Compile Include="Assets\Scripts\Runtime\DataTable\DefaultDataTableHelper.cs" />
+    <Compile Include="Assets\Scripts\Runtime\DataTable\LoadDataTableInfo.cs" />
     <Compile Include="Assets\Scripts\Runtime\Event\EventComponent.cs" />
     <Compile Include="Assets\Scripts\Runtime\Fsm\FsmComponent.cs" />
     <Compile Include="Assets\Scripts\Runtime\Network\NetworkClosedEventArgs.cs" />
@@ -72,6 +74,8 @@
     <Compile Include="Assets\Scripts\Runtime\Network\NetworkMissHeartBeatEventArgs.cs" />
     <Compile Include="Assets\Scripts\Runtime\ObjectPool\ObjectPoolComponent.cs" />
     <Compile Include="Assets\Scripts\Runtime\Procedure\ProcedureComponent.cs" />
+    <Compile Include="Assets\Scripts\Runtime\Resource\ResourceComponent.cs" />
+    <Compile Include="Assets\Scripts\Runtime\Resource\ResourceHelperBase.cs" />
     <Compile Include="Assets\Scripts\Runtime\Utility\Log.cs" />
     <None Include="Assets\Scripts\Runtime\UnityGameFramework.Runtime.asmdef" />
     <Reference Include="UnityEngine.AIModule">

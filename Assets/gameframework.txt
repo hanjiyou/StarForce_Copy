@@ -114,6 +114,13 @@ dir[dir.ElementAt(n).key]
 (4)Capacity:当前缓冲区大小，只能通过构造函数或者Capacity属性赋值
 (5)GetBuffer():返回当前内存流整个缓冲区的数据，包括那些分配了但是并没有用到的字节数据
 (5)Close()关闭流并释放资源
+
+19.this的4种用法
+(1)当前类的实例
+(2)串联构造函数 public A():this(name) 限制性A(name) 后执行A()
+(3)为指定的原始类型扩展方法
+(4)索引器:通过索引值获取数据
+一般格式:T this[int/string]{get{return ..}}
                               unity相关总结:
 1.EventSystem
  UGUI的EventSystem中，有很多事件接口，其中最常用的是IPointerClickHandler,
