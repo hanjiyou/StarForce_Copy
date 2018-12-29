@@ -121,6 +121,11 @@ dir[dir.ElementAt(n).key]
 (3)为指定的原始类型扩展方法
 (4)索引器:通过索引值获取数据
 一般格式:T this[int/string]{get{return ..}}
+
+20.lambda表达式捕获外部变量
+(1)for循环遍历数组 无法在lambda直接使用循环变量(值为最大值+1(比如数组长度+1) 超出范围)
+解决办法 ①用个外部临时变量过度一下 如:int index=i(i是循环变量)
+②用foreach lambda表达式可以直接使用循环变量
                               unity相关总结:
 1.EventSystem
  UGUI的EventSystem中，有很多事件接口，其中最常用的是IPointerClickHandler,
@@ -292,6 +297,7 @@ value是手柄单链表 根据不同事件池权限 会有不同的情况
 ①Queue<IReference>引用队列
 ②正在引用的数量 获取引用的数量 释放引用的数量 添加/移除引用的数量
 ③Acquire() 从队列获取引用 如果队列数量>0则出列；否则通过Activator创建并返回
+
 4.Network
 (1)NetworkManager(继承GFM抽象类 实现了INetworkManager接口)网络管理类
  (1 成员:
@@ -326,13 +332,11 @@ new AsyncCallback(ReceiveCallback),m_Socket)
 为空(初次)则处理包头(ProcessPacketHeader())，否则处理包体(ProcessPacket())
 ③ProcessPacketHeader() 使用频道辅助类反序列化接收流中的包头以及自定义错误数据，如果有错
 则停止，否则接收流预备处理包体(r.PrepareForPacket(packetHeader))
-
-整体流程:首先Connect的时候调用 PrepareForPacketHeader()初始化包头即包体长度
+ 整体流程:首先Connect的时候调用 PrepareForPacketHeader()初始化包头即包体长度
 ①socket异步接收 ②接收回调 如果rs的包头接口为空(初次)则调用 ProcessPacketHeader()会反
 序列化接受流得到包头接口然后赋值给rs ③再次接受->回调->包头不为空则 ProcessPacket()
 
 注意:socket的所有异步操作beginXXX(IAsyncResult ar)，ar是回调传递来的结果
-
 (3)ugf层以及gf层的NetworkConnect事件委托初始化以及运行的整体流程
  ①INetworkManager中定义event事件NetworkConnected 被Network通过实现接口所继承 并设为了属性访问器NetworkConnected 该访问器访问的私有字段是m_NetworkConnectedEventHandler
  ②步骤①中的委托真正执行是在OnNetworkChannelConnected()中，如果不为空则锁定执行
@@ -342,3 +346,34 @@ new AsyncCallback(ReceiveCallback),m_Socket)
  连接回调->执行网络频道委托NetworkChannelConnected->执行频道委托绑定的NetworkManager中的
  OnNetworkChannelConnected方法，在该方法中 判断NM中的事件是否为空 不为空则执行事件访问器
  对应的字段->执行事件在NetworkComponent中绑定的最终回调OnNetworkConnected
+
+5.Task任务
+5.1Task文件夹
+(1)TaskBase:IReference 任务抽象基类 实现了引用接口
+ 字段或属性:任务序列编号、任务优先级
+ 方法:
+ ①OnGenerate()切换状态为Waiting
+ ②OnStart()切换状态为Running
+ ③OnUpdate
+ ④OnComplete 切换状态为Completed
+ ⑤OnFailure ⑥OnCancel
+ ⑦Clear() 恢复字段为初始状态 任务状态切换为Free
+(2)TaskStatus 任务枚举类型
+(3)ConditionalTask 条件任务
+ 字段或属性:条件断言、完成事件、失败事件、撤销事件
+(4)TaskManager 任务管理器
+ 字段:单链表(存储所有的任务)、m_Serial(为每个任务分配的序列号)
+ 属性:任务数量
+ 方法:
+ ①Update()遍历单链表 判断每个任务的状态 是Waiting则执行OnStart 若是Running则调用OnUpdate 若是Free则抛异常 否则移除当前节点获取下一个节点
+ ②Shutdown()关闭并清理任务管理器
+ ③CancelAllTasks() 遍历单链表 所有的Waiting/Running状态的任务都执行OnCancel
+ ④GenerateTask<T>()生成任务 任务编号根据m_Serial累加赋值 然后按照优先级添加到单链表中
+ 5.2Base/TaskPool文件夹
+ (1)ITask任务接口
+ 属性:SerialId序列编号、Priority任务优先级、Done任务是否完成
+ (2)ITaskAgent<T> T:ITask任务代理接口
+①T
+
+6.DownloadManager下载管理器
+(1)属性字段:Priority(80)
