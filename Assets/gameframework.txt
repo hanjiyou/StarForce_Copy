@@ -391,8 +391,14 @@ Reset()停止正处理的任务并重置代理
 
 6.Download下载
 (1)DownloadManager.DownloadCounter
-①字段及特性 m_DownloadCounterNodes下载计算器节点队列<DownloadCounterNode>、m_UpdateInterval更新间隔、m_RecordInterval记录间隔、m_CurrentSpeed当前速度、m_Accmulator累加器、m_TimeLeft剩余时间
-②方法
+字段及属性 m_DownloadCounterNodes下载计数器节点队列<DownloadCounterNode>、m_UpdateInterval更新间隔、m_RecordInterval记录间隔、m_CurrentSpeed当前速度、m_Accmulator累加器/计时器、m_TimeLeft剩余时间方法
+方法①Update():轮询下载计数器节点，调用每个节点的Update()。移除时间超过记录间隔的队首元素，如果队列为空则重置并return。
+如果剩余时间小于0，遍历下载计数器节点获取总下载长度，计算当前速度为总长度/计时器
+②Reset() 重置动态数据如当前速度、剩余时间、计时器
+③RecordDownloadedLength() 创建已下载计数器节点类对象保存到队列中
+内部类 DownloadCounterNode(downloadedLength) 已下载计数器节点类 
+①包含已下载长度（构造函数参数）和流逝时间（构造函数默认为0）两个字段以及属性
+②Update()方法累加流逝时间
+(2)DownloadAgent:ITaskAgent  下载代理类
 
-
-属性字段:Priority(80)
+属性字段 Priority(80)
