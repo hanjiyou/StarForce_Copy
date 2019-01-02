@@ -372,8 +372,27 @@ new AsyncCallback(ReceiveCallback),m_Socket)
  5.2Base/TaskPool文件夹
  (1)ITask任务接口
  属性:SerialId序列编号、Priority任务优先级、Done任务是否完成
- (2)ITaskAgent<T> T:ITask任务代理接口
-①T
+ (2)ITaskAgent<T> where T:ITask 任务代理接口
+属性:获取T(任务)类型
+方法: Initialize()初始化任务代理、Update()任务代理轮询、
+Shutdown()关闭并清理任务代理、Start()开始处理任务、
+Reset()停止正处理的任务并重置代理
+ (3)TaskPool 任务池
+ 1)字段以及属性:m_FreeAgents空闲的代理(栈)、m_WorkingAgents工作中的代理(单链表)、m_WaitingTasks等待中的代理单链表)
+ 2)方法:
+①Update():遍历工作中的代理单链表 如果完成则该代理并从单链表中移除放入空闲代理栈
+中。如果空闲栈和工作链数量都大于0，将空闲栈的代理剪切到工作链中，等待链移除链首
+元素判断状态是否完成
+②Shutdown():关闭并清理任务池
+③AddAgent() 增加任务代理
+④AddTask() 增加任务
+⑤RemoveTask() 移除任务
+⑥RemoveAllTasks() 移除所有任务
 
-6.DownloadManager下载管理器
-(1)属性字段:Priority(80)
+6.Download下载
+(1)DownloadManager.DownloadCounter
+①字段及特性 m_DownloadCounterNodes下载计算器节点队列<DownloadCounterNode>、m_UpdateInterval更新间隔、m_RecordInterval记录间隔、m_CurrentSpeed当前速度、m_Accmulator累加器、m_TimeLeft剩余时间
+②方法
+
+
+属性字段:Priority(80)
