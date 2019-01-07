@@ -396,9 +396,14 @@ Reset()停止正处理的任务并重置代理
 如果剩余时间小于0，遍历下载计数器节点获取总下载长度，计算当前速度为总长度/计时器
 ②Reset() 重置动态数据如当前速度、剩余时间、计时器
 ③RecordDownloadedLength() 创建已下载计数器节点类对象保存到队列中
-内部类 DownloadCounterNode(downloadedLength) 已下载计数器节点类 
+内部类 DownloadCounterNode(downloadedLength) 已下载计数器节点类
 ①包含已下载长度（构造函数参数）和流逝时间（构造函数默认为0）两个字段以及属性
 ②Update()方法累加流逝时间
-(2)DownloadAgent:ITaskAgent  下载代理类
+(2)DownloadAgent:ITaskAgent,IDisposable  下载代理类
+1)字段 m_Helper下载代理辅助器、m_Task下载任务、m_FileStream文件流、m_WaitFlushSize等待刷新大小、m_WaitTime等待时间、开始的长度、已下载长度、已保存长度、m_Disposed、四种Action:DownloadAgent开始、更新、成功、失败
+2)方法
+①Initialize()初始化下载代理 来自接口ITaskAgent 即为代理辅助器的更新
+(3)DownloadTask:ITask 下载任务
 
+(4)DownloadManager
 属性字段 Priority(80)
