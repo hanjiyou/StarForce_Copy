@@ -7,3 +7,5 @@
 /.vscode
 /.idea
 *.csproj
+/Assets/Plugins
+*.user
