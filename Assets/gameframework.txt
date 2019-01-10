@@ -126,6 +126,20 @@ dir[dir.ElementAt(n).key]
 (1)for循环遍历数组 无法在lambda直接使用循环变量(值为最大值+1(比如数组长度+1) 超出范围)
 解决办法 ①用个外部临时变量过度一下 如:int index=i(i是循环变量)
 ②用foreach lambda表达式可以直接使用循环变量
+
+21.内存管理
+(1)两种资源:托管资源和非托管资源(https://www.cnblogs.com/cjm123/p/8391823.html)
+①托管资源:该资源的回收人工无法干预，大多数对象都是托管资源，即可以依靠.NetFramework的垃圾回收器隐式地执行所有必要的内存管理任务
+②非托管资源:包括Stream流、数据库的连接、GDI+、Com对象等资源，需要我们手动
+去释放，否则会占用系统的内存和资源，可能出错。常见的有:FS,Stream,Socket,Write,Timer,Context等
+(2).Net提供Object.Finalize()允许垃圾回收器回收该对象时适当清理其非托管资源，实现Finalize()方法会对性能有影响，即需要两次垃圾回收 一次回收含终结器的 一次回收不含的
+(3)Windows的内存管理(虚拟寻址系统)
+①堆栈/栈:存放值类型，后入先出，性能高，不灵活，数据一般小
+②托管堆/堆:Customer customer=new Customer() 在堆上分配一个内存，存放Customer实例，然后把该内存的地址设置为变量customer的值，customer分配在栈中
+(4)非托管对象的特殊处理
+对于不受垃圾回收期控制的指定专门的规则，使用两种机制自动释放该资源
+①声明析构函数:垃圾回收器删除对象时调用，受垃圾回收器运行规则决定，不能在析构中放需要在某时刻运行的代码，如果对象占用宝贵资源，应该尽快释放而不是等待回收器
+②实现IDisposable接口(替代析构函数):为释放非托管资源提供了确定的机制，同时避免了产生析构函数与垃圾回收器可能造成的问题。调用Dispose()时可能出异常，一般方法用try{}finally{}捕获异常并确保关闭，为了防止重复这样的结构，C#提供了using(){}代码块确保引用在超出作用域时即使有异常，对象上自动调用Dispose()(不是Close())
                               unity相关总结:
 1.EventSystem
  UGUI的EventSystem中，有很多事件接口，其中最常用的是IPointerClickHandler,
@@ -402,8 +416,16 @@ Reset()停止正处理的任务并重置代理
 (2)DownloadAgent:ITaskAgent,IDisposable  下载代理类
 1)字段 m_Helper下载代理辅助器、m_Task下载任务、m_FileStream文件流、m_WaitFlushSize等待刷新大小、m_WaitTime等待时间、开始的长度、已下载长度、已保存长度、m_Disposed、四种Action:DownloadAgent开始、更新、成功、失败
 2)方法
-①Initialize()初始化下载代理 来自接口ITaskAgent 即为代理辅助器的更新
+①Initialize()初始化下载代理 来自接口ITaskAgent 即为代理辅助器接口的3中事件更新、完成、错误事件绑定回调
+②Update()轮询 如果当前下载任务的状态是Doing 则累加等待时间 如果超时则执行下载代理辅助器错误回调
+③Shutdown()关闭并清理下载代理 解绑辅助器的3种回调
+④Start()开始处理下载任务:
+切换状态为Doing。判断下载路径是否已存在是则fs=File.OpenWrite(path)返回文件流，并设置该流对象pos为终点，开始大小=保存大小=文件流长度，已下载大小为0；否则先判断下载路径的文件夹是否存在，不存在则创建，然后fs=new FileStream(path,FileMode.Create,FileAccess.Write)，开始大小、已保存大小、已下载大小=0，如果下载代理Start的Action不为空则执行，调用辅助器方法
+⑤Reset()重置下载代理 即重置所有的动态数据
+⑥Dispose()释放资源 调用GC.SuppressFinalize()使垃圾回收期不调用对象的终结器
 (3)DownloadTask:ITask 下载任务
+1)字段:序列编号、优先级、是否完成、下载任务的状态(枚举)、下载路径、下载uri、刷新区大小、超时时长、用户数据
+无方法
 
 (4)DownloadManager
 属性字段 Priority(80)
