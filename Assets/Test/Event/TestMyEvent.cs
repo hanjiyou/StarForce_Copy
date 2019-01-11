@@ -7,9 +7,10 @@ public class TestMyEvent : MonoBehaviour
 {
 	private MyEvent _event;
 	// Use this for initialization
-	void Start () {
-		this._event=new MyEvent();
-		this._event.MyStrEvent += OnTestMethod;
+	void Start ()
+	{
+		this._event =new MyEvent();
+		//this._event.MyStrEvent += OnTestMethod;
 		this._event.ExecuteMyEvent();
 	}
 
