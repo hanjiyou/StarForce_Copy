@@ -5,7 +5,7 @@ namespace UnityGameFramework.Runtime
     /// <summary>
     /// 下载失败事件
     /// </summary>
-    public class DownloadFailureEventArgs:GameEventArgs
+    public sealed class DownloadFailureEventArgs:GameEventArgs
     {
         /// <summary>
         /// 下载失败事件编号

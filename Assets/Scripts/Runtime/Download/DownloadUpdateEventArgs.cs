@@ -2,24 +2,22 @@ using GameFramework.Event;
 
 namespace UnityGameFramework.Runtime
 {
-    public sealed class DownloadStartEventArgs:GameEventArgs
+    /// <summary>
+    /// 下载更新事件
+    /// </summary>
+    public sealed class DownloadUpdateEventArgs:GameEventArgs
     {
         /// <summary>
-        /// 下载开始事件编号。
+        /// 下载更新事件编号。
         /// </summary>
-        public static readonly int EventId = typeof(DownloadStartEventArgs).GetHashCode();
-
+        public static readonly int EventId = typeof(DownloadUpdateEventArgs).GetHashCode();
         /// <summary>
-        /// 获取下载开始事件编号。
+        /// 获取下载更新事件编号
         /// </summary>
         public override int Id
         {
-            get
-            {
-                return EventId;
-            }
+            get { return EventId; }
         }
-
         /// <summary>
         /// 获取下载任务的序列编号。
         /// </summary>
@@ -66,7 +64,7 @@ namespace UnityGameFramework.Runtime
         }
 
         /// <summary>
-        /// 清理下载开始事件。
+        /// 清理下载更新事件。
         /// </summary>
         public override void Clear()
         {
@@ -76,12 +74,13 @@ namespace UnityGameFramework.Runtime
             CurrentLength = default(int);
             UserData = default(object);
         }
+
         /// <summary>
-        /// 填充下载开始事件。
+        /// 填充下载更新事件。
         /// </summary>
         /// <param name="e">内部事件。</param>
-        /// <returns>下载开始事件。</returns>
-        public DownloadStartEventArgs Fill(GameFramework.Download.DownloadStartEventArgs e)
+        /// <returns>下载更新事件。</returns>
+        public DownloadUpdateEventArgs Fill(GameFramework.Download.DownloadUpdateEventArgs e)
         {
             SerialId = e.SerialId;
             DownloadPath = e.DownloadPath;
@@ -91,5 +90,6 @@ namespace UnityGameFramework.Runtime
 
             return this;
         }
+        
     }
 }
