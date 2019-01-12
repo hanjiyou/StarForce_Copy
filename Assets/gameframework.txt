@@ -145,6 +145,16 @@ dir[dir.ElementAt(n).key]
 ①析构函数 ②对基类的Finalize的调用。
 注意:不建议使用该方法，因为回收对象内存时至少需要两次垃圾回收，只回收没终结器的
 (6)SuppressFinalize()方法则告诉垃圾收集器有一个类不再需要调用其析构函数了，就意味着垃圾收集器认为这个对象根本没有析构函数。一般该方法在IDisposable.Dispose()中调用。
+
+22.AppDomain讲解
+(1)与CLR的关系:AppDomain是CLR的运行单元，CLR被CLRHOST加载后 会创建默认的AppDomain且程序的入口点Main()就是在这个默认的AppDomain中执行
+(2)与进程的关系:AppDomain被创建在进程中，一个进程可多个AD,一个AD只
+能一个进程
+(3)vs线程:AppDomain是静态概念，只限定了对象的边界；线程是动态概念，可运行在不同的AD,一个AD可创建多个线程，但不能限定线程只在本AD中执行。该线程其实是ST，不能被操作系统识别，操作系统识别的是HT，当ht访问到某个AD时，AD就会为之产生一个ST，ht有thread local storage(TLS)，这个存储区被CLR用来存储这个ht当前对应的AD引用以及st引用，ht穿越到另一个AD时，TLS中的这些引用也会变。
+(4)vs Assembly:Assembly是.Net的基本部署单元，为CLR提供元数据，不能单独执行，必须得被加载到AppDomain中，然后由AppDomain创建程序集中的对象，一个程序集可被多个AD加载，一个AD可加载多个程序集。每个AppDomain引用到某个类型的时候需要把相应的assembly在各自的AppDomain中初始化。因此，每个AppDomain会单独保持一个类的静态变量。
+
+
+
                               unity相关总结:
 1.EventSystem
  UGUI的EventSystem中，有很多事件接口，其中最常用的是IPointerClickHandler,

@@ -40,9 +40,18 @@ namespace UnityGameFramework.Runtime
 
                 helper = (T) (new GameObject()).AddComponent(helperType);
             }
+            else if (customHelper == null)
+            {
+                Log.Warning("You must set custom helper with '{0}' type first.", typeof(T).FullName);
+                return null;
+            }
+            else if (customHelper.gameObject.InScene())
+            {
+                helper = (index > 0 ? Object.Instantiate(customHelper) : customHelper);
+            }
             else
             {
-                
+                helper = Object.Instantiate(customHelper);
             }
 
             return helper;
