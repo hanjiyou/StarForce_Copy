@@ -205,7 +205,16 @@ if(Physics.Raycast(ray, out raycastHit)){ rh.transform}
 ①我们自己定义的普通cs文件会被打入Assembly-CSharp.dll中
 ②放在Plugins下的cs文件会被打入Assembly-CSharp-firstpass.dll中
 (3.1)unity编译顺序如下①Plugins ②Plugins/Editor ③其他不在Plugins ④其他Editor
-
+5.WWW与UnityWebRequest(两者都是用于http请求)
+如果都是用协程等待下面两种方法的下载
+(1)WWW属于老方法，没有timeout字段，无法设置超时时间，协程会一直等待
+(2)UnityWebRequest(https://blog.csdn.net/qwe25878/article/details/85051911):
+①unity5.4版本出的用于替换WWW，可设置timeout，如果超时会返回，且IsNetworkError为true
+②判断错误不应用webRequest.erro!=null,这是错误的；应该用.isHttpError||.isNetworkError来判断是否出错
+③SendWebRequest()开始与远程服务器通信，返回WebRequestAsyncOperation对象，协程内产生该对象将导致协程暂停，知道UnityWebRequest遇到错误或完成通信。
+④Abort() 尽快结束联网过程，可以随时调用此方法,UnityWebRequests被认为遇
+到了系统错误。 isNetworkError或isHttpError属性将返回true，error属性将为“User Aborted”
+⑤EscapeURL()些文本字符在URL中存在时具有特殊含义。 如果需要在URL参数中包含这些字符，则必须使用转义序列表示它们。
 
                                  二.框架模块详解
 1.Component详解(都属于MB的子类，能使用MB的生命周期方法)
