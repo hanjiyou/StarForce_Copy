@@ -461,3 +461,65 @@ Reset()停止正处理的任务并重置代理
 ④AddDownload() 添加下载任务
 创建一个DownloadTask对象 taskPool.AddTask(task) 按照优先级添加到任务池的等待中任务单链表中
 ⑤RemoveDownload()移除下载任务 调用任务池的移除任务
+
+7.Resource详解
+7.1 各种回调
+(1)CheckResourcesCompleteCallback:使用可更新模式并检查资源完成的回调函数。
+(2)DecryptResourceCallback:解密资源回调函数。
+(3)InitResourceCompleteCallback:使用单击模式并初始化资源完成的回调函数
+(4)LoadAssetCallbacks:加载资产回调集
+  ①LoadAssetSuccessCallback:加载资产成功回调
+  ②LoadAssetFailureCallback:加载资产失败回调
+  ③LoadAssetUpdateCallback:加载资产更新回调
+  ④LoadAssetDependencyAssetCallback:加载资产时加载依赖的回调
+(5)LoadBytesCallback:读取数据流回调函数
+(6)LoadSceneCallbacks:加载场景回调函数集
+  ①LoadSceneSuccessCallback:加载场景成功回调
+  ②LoadSceneFailureCallback:加载场景失败回调
+  ③LoadSceneUpdateCallback:加载场景更新回调
+  ④LoadSceneDependencyAssetCallback:加载场景时加载依赖资源回调函数
+(7)UnloadSceneCallbacks:卸载场景回调函数集
+  ①UnloadSceneSuccessCallback:卸载场景成功回调
+  ②UnloadSceneFailureCallback:卸载场景失败回调
+(8)UpdateResourceCompleteCallback:使用可更新模式并更新资源全部完成的回调
+(9)UpdateVersionListCallbacks:版本资源列表更新回调函数集
+  ①UpdateVersionListSuccessCallback:版本资源列表更新成功回调函数
+  ②UpdateVersionListFailureCallback:版本资源列表更新失败回调函数
+7.2 各种事件
+(1)LoadResourceAgentHelper Error/LoadComplete/ParseBytesComplete/ReadBytesComplete/ReadFile/Update EventArgs 加载资源代理辅助器错误/异步加载资源完成/解析流完成/读取资源二进制流/读取文件转换为加载对象/更新
+(2)ResourceUpdate Changed/Failure/Start/Success EventArgs 资源更新 改变/失败/开始/成功事件
+7.3 其他常量以及枚举等
+(1)CheckVersionListResult:检查版本资源列表结果(枚举)
+(2)Constant:资源相关常量
+(3)ResourceMode(enum):资源模式
+7.4 辅助器
+(1)ILoadResourceAgentHelper:加载资源代理辅助器接口
+(2)IResourceHelper:资源辅助器接口
+7.5 ResourceManager类的嵌套类
+(1)AssetDependencyInfo
+(2)AssetInfo
+(3)ResourceManager资源管理器本身
+(4)LoadType(enum):资源加载方式
+(5)ReadWriteResourceInfo:读写资源信息
+(6)ResourceChecker:资源检查器
+ (6.1)CheckInfo:资源检查信息
+  (6.1.1)CheckStatus(enum):资源检查状态
+  (6.1.2)LocalVersionInfo:本地资源状态信息
+  (6.1.3)RemoteVersionInfo:远程资源状态信息
+(7)ResourceGroup:资源组
+(8)ResourceInfo:资源信息
+(9)ResourceIniter:资源初始化器
+(10)ResourceLoader:加载资源器
+ (10.1)AssetObject:资源对象
+ (10.2)LoadResourceTaskBase:ITask :加载资源任务抽象基类
+ (10.3)LoadAssetTask:加载资源任务
+ (10.4)LoadDependencyAssetTask:加载依赖资源任务
+ (10.5)LoadResourceAgent:加载资源代理
+  (10.5.1)WaitingType:等待类型
+ (10.6)LoadSceneTask:加载场景任务
+ (10.7)ResourceObject:资源对象
+(11)ResourceName:资源名称
+(12)ResourceNameComparer:资源名称比较器
+(13)ResourceUpdater:资源更新器
+ (13.1)UpdateInfo:更新信息
+(14)VersionListProcessor:版本资源列表处理器
