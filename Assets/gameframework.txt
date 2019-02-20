@@ -489,20 +489,30 @@ Reset()停止正处理的任务并重置代理
 (1)LoadResourceAgentHelper Error/LoadComplete/ParseBytesComplete/ReadBytesComplete/ReadFile/Update EventArgs 加载资源代理辅助器错误/异步加载资源完成/解析流完成/读取资源二进制流/读取文件转换为加载对象/更新
 (2)ResourceUpdate Changed/Failure/Start/Success EventArgs 资源更新 改变/失败/开始/成功事件
 7.3 其他常量以及枚举等
-(1)CheckVersionListResult:检查版本资源列表结果(枚举)
+(1)CheckVersionListResult(enum):检查版本资源列表结果
 (2)Constant:资源相关常量
+字段:默认资源加载优先级
 (3)ResourceMode(enum):资源模式
 7.4 辅助器
 (1)ILoadResourceAgentHelper:加载资源代理辅助器接口
 (2)IResourceHelper:资源辅助器接口
 7.5 ResourceManager类的嵌套类
 (1)AssetDependencyInfo
+ 字段:string资源名、依赖资源名数组、依赖零散资源名数组
 (2)AssetInfo
+ 字段:string资源名、ResourceName资源名、子资源信息
 (3)ResourceManager资源管理器本身
-(4)LoadType(enum):资源加载方式
+(4)LoadType(enum):资源加载方式:从文件/内存中加载、快速解密加载、解密加载
 (5)ReadWriteResourceInfo:读写资源信息
+字段:LoadType加载类型、长度、哈希码
 (6)ResourceChecker:资源检查器
  (6.1)CheckInfo:资源检查信息
+字段:ResourceName资源名、CheckStatus资源检查状态、是否需要从读写区移除、
+远程信息、本地信息-只读信息、本地信息-可读写信息
+方法:①SetVersionInfo() 设置资源在版本中的信息
+   ②SetReadOnlyInfo() 设置资源在只读区中的信息
+   ③SetReadWriteInfo() 设置资源在读写区中的信息
+   ④RefreshStatus() 刷新资源信息状态//TODO
   (6.1.1)CheckStatus(enum):资源检查状态
   (6.1.2)LocalVersionInfo:本地资源状态信息
   (6.1.3)RemoteVersionInfo:远程资源状态信息
