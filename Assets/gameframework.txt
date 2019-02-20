@@ -497,25 +497,28 @@ Reset()停止正处理的任务并重置代理
 (1)ILoadResourceAgentHelper:加载资源代理辅助器接口
 (2)IResourceHelper:资源辅助器接口
 7.5 ResourceManager类的嵌套类
-(1)AssetDependencyInfo
+(1)结构体AssetDependencyInfo
  字段:string资源名、依赖资源名数组、依赖零散资源名数组
-(2)AssetInfo
+(2)结构体AssetInfo
  字段:string资源名、ResourceName资源名、子资源信息
 (3)ResourceManager资源管理器本身
 (4)LoadType(enum):资源加载方式:从文件/内存中加载、快速解密加载、解密加载
-(5)ReadWriteResourceInfo:读写资源信息
+(5)结构体ReadWriteResourceInfo:读写资源信息
 字段:LoadType加载类型、长度、哈希码
 (6)ResourceChecker:资源检查器
+ RM资源管理器对象、Dict<ResourceName,CheckInfo>、当前变体、
+ 版本列表读取就绪、只读列表就绪、读写列表就绪、资源需要更新的Action、资源检查完成
  (6.1)CheckInfo:资源检查信息
 字段:ResourceName资源名、CheckStatus资源检查状态、是否需要从读写区移除、
 远程信息、本地信息-只读信息、本地信息-可读写信息
 方法:①SetVersionInfo() 设置资源在版本中的信息
    ②SetReadOnlyInfo() 设置资源在只读区中的信息
    ③SetReadWriteInfo() 设置资源在读写区中的信息
-   ④RefreshStatus() 刷新资源信息状态//TODO
+   ④RefreshStatus() 刷新资源信息状态
   (6.1.1)CheckStatus(enum):资源检查状态
-  (6.1.2)LocalVersionInfo:本地资源状态信息
-  (6.1.3)RemoteVersionInfo:远程资源状态信息
+  (6.1.2)结构体LocalVersionInfo:本地资源状态信息
+  字段:是否存在bool、加载类型LoadType、长度、哈希
+  (6.1.3)结构体RemoteVersionInfo:远程资源状态信息
 (7)ResourceGroup:资源组
 (8)ResourceInfo:资源信息
 (9)ResourceIniter:资源初始化器
