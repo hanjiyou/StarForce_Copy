@@ -17,7 +17,8 @@ namespace Test
             thermostat.OnTemperatureChange -= cooler.OnTemperatureChanged;
            // thermostat.OnTemperatureChange -= heater.OnTemperatureChanged;
             thermostat.CurrentTemperature = 20;
-
+               //事件只能在包容类内部触发
+            //thermostat.OnTemperatureChange(1);
         }
     }
 }

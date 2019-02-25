@@ -39,19 +39,19 @@ MyObj obj=new MyObj();
 9.IEnumerable和IEnumerator的用法
 (1)IEnumerable接口有个返回IEnumerator引用的GetEnumerator()的方法     只有实现IEnumerable接口并重写GetEnumerator()方法  只能通过重写该方法才能使用foreach去遍历
 (2)一个类型是否支持foreach遍历，必须满足下面条件：
-方案1：让这个类实现IEnumerable接口
+方案1：让这个类实现IEnumerable接口，并返回实现了IEnumerator接口的类的实例
 方案2：这个类有一个public的GetEnumerator的实例方法，并且返回类型中有public 的bool MoveNext()实例方法和public的Current实例属性。
-10.委托
+(3)IEnumerable是延迟加载的，每次访问(tolist())才取值
+10.委托与事件
 (1)Action:定义的是返回值为空的委托，参数可为0-4个
 (2)Function:定义一个带返回值的委托，参数为0-4个
 无论委托还是事件，都得先定义委托(地位等于类) public delegate void MyDelegate(int)
-(1)委托与事件的区别
+(3)委托与事件的区别
 ①委托可根据权限进行赋值和调用，
-②事件能根据权限进行赋值，只能在所属类中调用
+②事件能根据权限进行注册和解绑，只能在所属类中调用
 ③事件如果改成属性访问器样式 event Myevent{add;remove}，则只能+=或-=，无论在哪
-都不能直接执行
-(2)通过定义私有委托对象和共有事件属性访问器(对委托进行绑定解绑函数)
-，我们可以设置仅仅在外界进行绑定，内部执行回调
+都不能直接执行，只能执行事件对应的私有委托
+④规范化要求:事件对应的私有委托一般使用EventHandler<T>
 11.Queue队列和Statck栈的区别
 (1)Queue 先进先出(可以看成单向路)
 ①Enqueue(obj):将obj添加到队列末尾
@@ -66,6 +66,7 @@ MyObj obj=new MyObj();
  (1)做位标志进行位运算(从0开始赋值,1,2,4)
 ①要使枚举类型具有位运算的能力，需要添加Flags特性
 ②枚举进行&、|、~转成二进制进行位运算
+③枚举减法只能减有对应位的，不能随意减
 13.字典与List的使用和关联
 (1)Dictionary的用法
 ①按照key的值:dir[n]=value 相当于Add(n,value)
@@ -117,7 +118,7 @@ dir[dir.ElementAt(n).key]
 
 19.this的4种用法
 (1)当前类的实例
-(2)串联构造函数 public A():this(name) 限制性A(name) 后执行A()
+(2)串联构造函数 public A():this(name) 先执行A(name) 后执行A()
 (3)为指定的原始类型扩展方法
 (4)索引器:通过索引值获取数据
 一般格式:T this[int/string]{get{return ..}}
