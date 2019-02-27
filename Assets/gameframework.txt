@@ -43,8 +43,8 @@ MyObj obj=new MyObj();
 方案2：这个类有一个public的GetEnumerator的实例方法，并且返回类型中有public 的bool MoveNext()实例方法和public的Current实例属性。
 (3)IEnumerable是延迟加载的，每次访问(tolist())才取值
 10.委托与事件
-(1)Action:定义的是返回值为空的委托，参数可为0-4个
-(2)Function:定义一个带返回值的委托，参数为0-4个
+(1)Action:定义的是返回值为空的委托
+(2)Function:定义一个带返回值的委托
 无论委托还是事件，都得先定义委托(地位等于类) public delegate void MyDelegate(int)
 (3)委托与事件的区别
 ①委托可根据权限进行赋值和调用，
@@ -170,10 +170,10 @@ dir[dir.ElementAt(n).key]
 Ray r=camera.ScreenPointToRay(Input.mousePosition)
 RaycastHit rh,
 if(Physics.Raycast(ray, out raycastHit)){ rh.transform}
-(2)一般用于检测命中的UI部分，无法获取到带碰撞体的模型
+(2)用于检测命中的UI部分，无法获取到带碰撞体的模型
 ①使用PointerEventData 初始化点击位置 ped.position=Input.mousePosition
 ②EventSystem.current.RaycastAll(ped,results)
-(3)使用PointerEventData和GraphicRaycaster.Raycast(ped,result)，功能同2
+(3)使用PointerEventData和canvas.GetComponent<GraphicRaycaster>().Raycast(ped,result)，功能同2
 
 3.Editor总结
 (1)普通的Editor直接使用[MenuItem]特性指定静态方法，会在菜单栏生成自定义的选项
@@ -216,6 +216,7 @@ if(Physics.Raycast(ray, out raycastHit)){ rh.transform}
 ④Abort() 尽快结束联网过程，可以随时调用此方法,UnityWebRequests被认为遇
 到了系统错误。 isNetworkError或isHttpError属性将返回true，error属性将为“User Aborted”
 ⑤EscapeURL()些文本字符在URL中存在时具有特殊含义。 如果需要在URL参数中包含这些字符，则必须使用转义序列表示它们。
+6.UNITY_ANDROID宏定义运行情况包含两种①android端 ②unity切换到android平台
 
                                  二.框架模块详解
 1.Component详解(都属于MB的子类，能使用MB的生命周期方法)
@@ -508,7 +509,7 @@ Reset()停止正处理的任务并重置代理
 字段:LoadType加载类型、长度、哈希码
 (6)ResourceChecker:资源检查器
  RM资源管理器对象、Dict<ResourceName,CheckInfo>、当前变体、
- 版本列表读取就绪、只读列表就绪、读写列表就绪、资源需要更新的Action、资源检查完成
+ 版本列表读取就绪、只读列表就绪、读写列表就绪、资源需要更新Action、资源检查完成Action
  (6.1)CheckInfo:资源检查信息
 字段:ResourceName资源名、CheckStatus资源检查状态、是否需要从读写区移除、
 远程信息、本地信息-只读信息、本地信息-可读写信息
