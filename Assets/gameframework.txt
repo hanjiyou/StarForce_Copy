@@ -153,8 +153,8 @@ dir[dir.ElementAt(n).key]
 能一个进程
 (3)vs线程:AppDomain是静态概念，只限定了对象的边界；线程是动态概念，可运行在不同的AD,一个AD可创建多个线程，但不能限定线程只在本AD中执行。该线程其实是ST，不能被操作系统识别，操作系统识别的是HT，当ht访问到某个AD时，AD就会为之产生一个ST，ht有thread local storage(TLS)，这个存储区被CLR用来存储这个ht当前对应的AD引用以及st引用，ht穿越到另一个AD时，TLS中的这些引用也会变。
 (4)vs Assembly:Assembly是.Net的基本部署单元，为CLR提供元数据，不能单独执行，必须得被加载到AppDomain中，然后由AppDomain创建程序集中的对象，一个程序集可被多个AD加载，一个AD可加载多个程序集。每个AppDomain引用到某个类型的时候需要把相应的assembly在各自的AppDomain中初始化。因此，每个AppDomain会单独保持一个类的静态变量。
-
-
+23.SortedDictionary
+需要比较器实现来执行键的比较。一般key实现IComparable泛型接口，使用该实现进行比较。
 
                               unity相关总结:
 1.EventSystem
@@ -505,9 +505,12 @@ Reset()停止正处理的任务并重置代理
  字段:string资源名、ResourceName资源名、子资源信息
 (3)ResourceManager资源管理器本身
 字段:
-①m_ReadOnlyPath:只读路径,
+基本信息:包\版本\只读\可读写列表头、版本\资源列表\备份文件后缀\文件名、读写列表版本头、只读路径、可读写路径、资源辅助器接口、资源模式、
+多个字典:资产信息字典(Dict<string,AssetInfo>)、资产依赖信息字典(Dict<string,AssetDependencyInfo>)、资源信息字典(Dict<RN,RI>)、资源组字典(<string,RG>)、可读写资源信息(SortedDictionary<RN,RWRI>)
+RM内部类对象(内部都需要持有RM):资源初始化器对象、版本资源列表处理器、资源检查器、资源更新器、资源加载器(ResourceLoader本质是TaskPool以及IobjectPool等集合字典)
+回调以及事件手柄:解密资源\初始化资源完成\更新版本列表\检查资源完成\更新资源完成回调、资源更新开始\改变\成功\失败回调
 属性:
-①ReadOnlyPath:
+ReadOnlyPath
 方法:
 ①SetReadOnlyPath():设置只读路径，在ResourceComponent中赋值，值为Application.streamingAssetsPath
 (4)LoadType(enum):资源加载方式:从文件/内存中加载、快速解密加载、解密加载
