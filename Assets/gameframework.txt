@@ -155,6 +155,9 @@ dir[dir.ElementAt(n).key]
 (4)vs Assembly:Assembly是.Net的基本部署单元，为CLR提供元数据，不能单独执行，必须得被加载到AppDomain中，然后由AppDomain创建程序集中的对象，一个程序集可被多个AD加载，一个AD可加载多个程序集。每个AppDomain引用到某个类型的时候需要把相应的assembly在各自的AppDomain中初始化。因此，每个AppDomain会单独保持一个类的静态变量。
 23.SortedDictionary
 需要比较器实现来执行键的比较。一般key实现IComparable泛型接口，使用该实现进行比较。
+24.静态与只读变量
+(1)const只能声明同时初始化，不能声明为static，没有自己的存储位置，编译器被替换为值，类型c++的#define，只能是数值或者字符串
+(2)readonly:可以在初始化和构造函数中复制，运行时决定，可任意类型
 
                               unity相关总结:
 1.EventSystem
