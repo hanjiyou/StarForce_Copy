@@ -1,4 +1,7 @@
 using System;
+using System.Collections.Generic;
+using System.IO;
+using GameFramework;
 using GameFramework.DataTable;
 using UnityEngine;
 
@@ -28,6 +31,26 @@ namespace UnityGameFramework.Runtime
         /// <param name="text">要解析的数据表文本。</param>
         /// <returns>数据表行文本。</returns>
         public abstract string[] SplitToDataRows(string text);
+
+        public bool LoadDataTable(object dataTableAsset, LoadType loadType, object userData)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<GameFrameworkSegment<string>> GetDataRowSegments(string text)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<GameFrameworkSegment<byte[]>> GetDataRowSegments(byte[] bytes)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<GameFrameworkSegment<Stream>> GetDataRowSegments(Stream stream)
+        {
+            throw new NotImplementedException();
+        }
 
         /// <summary>
         /// 释放数据表资源。

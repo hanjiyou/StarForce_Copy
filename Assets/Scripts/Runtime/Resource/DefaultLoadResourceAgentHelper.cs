@@ -1,5 +1,6 @@
 using System;
 using GameFramework.Resource;
+using UnityEditor.VersionControl;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 #if UNITY_5_4_OR_NEWER
@@ -22,8 +23,10 @@ namespace UnityGameFramework.Runtime
 #if UNITY_5_4_OR_NEWER
         private UnityWebRequest m_UnityWebRequest = null;
 #else
-        private WWW m_WWW = null;
+       // private WWW m_WWW = null;
 #endif
+        private WWW m_WWW = null;
+
         private AssetBundleCreateRequest m_FileAssetBundleCreateRequest = null;
         private AssetBundleCreateRequest m_BytesAssetBundleCreateRequest = null;
         private AssetBundleRequest m_AssetBundleRequest = null;
@@ -307,7 +310,15 @@ namespace UnityGameFramework.Runtime
         /// </summary>
         private void Update()
         {
-            
+#if UNITY_5_4_OR_NEWER
+            UpdateUnityWebRequest();
+#else
+            UpdateWWW();
+#endif
+            UpdateFileAssetBundleCreateRequest();
+            UpdateBytesAssetBundleCreateRequest();
+            UpdateAssetBundleRequest();
+            UpdateAsyncOperation();
         }
 #if UNITY_5_4_OR_NEWER
         private void UpdateUnityWebRequest()
@@ -318,7 +329,8 @@ namespace UnityGameFramework.Runtime
                 {
                     if (string.IsNullOrEmpty(this.m_UnityWebRequest.error))
                     {
-                        this.m_LoadResourceAgentHelperReadBytesCompleteEventHandler(this,new LoadResourceAgentHelperReadBytesCompleteEventArgs(this.m_UnityWebRequest.downloadHandler.data,this.m_LoadType));
+                        this.m_LoadResourceAgentHelperReadBytesCompleteEventHandler(this,
+                            new LoadResourceAgentHelperReadBytesCompleteEventArgs(this.m_UnityWebRequest.downloadHandler.data,this.m_LoadType));
                         this.m_UnityWebRequest.Dispose();
                         this.m_UnityWebRequest = null;
                         this.m_BytesFullPath = null;
@@ -333,18 +345,166 @@ namespace UnityGameFramework.Runtime
 #else
                         isError=this.m_UnityWebRequest.isError; 
 #endif
-                        this.m_LoadResourceAgentHelperErrorEventHandler(this,new LoadResourceAgentHelperErrorEventArgs(LoadResourceStatus.NotExist, 
-                            Utility.Text.Format("Can not load asset bundle '{0}' with error message '{1}'.", m_BytesFullPath, isError ? m_UnityWebRequest.error : null)));
+                        this.m_LoadResourceAgentHelperErrorEventHandler(this,
+                            new LoadResourceAgentHelperErrorEventArgs(LoadResourceStatus.NotExist, 
+                            Utility.Text.Format("Can not load asset bundle '{0}' with error message '{1}'.",
+                                m_BytesFullPath, isError ? m_UnityWebRequest.error : null)));
                     }
                 }
                 else if(this.m_UnityWebRequest.downloadProgress!=this.m_LastProgress)//如果下载进度不等 即有新下载 则调用更新事件
                 {
                     this.m_LastProgress = this.m_UnityWebRequest.downloadProgress;
-                    this.m_LoadResourceAgentHelperUpdateEventHandler(this,new LoadResourceAgentHelperUpdateEventArgs(LoadResourceProgress.ReadResource,this.m_UnityWebRequest.downloadProgress));
+                    this.m_LoadResourceAgentHelperUpdateEventHandler(this,new 
+                        LoadResourceAgentHelperUpdateEventArgs(LoadResourceProgress.ReadResource,this.m_UnityWebRequest.downloadProgress));
+                }
+            }
+        }
+#else
+        private void UpdateWWW()
+        {
+            if (this.m_WWW != null)
+            {
+                if (this.m_WWW.isDone)
+                {
+                    if (string.IsNullOrEmpty(this.m_WWW.error))
+                    {
+                        this.m_LoadResourceAgentHelperReadBytesCompleteEventHandler(this,
+    new LoadResourceAgentHelperReadBytesCompleteEventArgs(this.m_WWW.bytes,this.m_LoadType));
+                        this.m_WWW.Dispose();
+                        this.m_WWW = null;
+                        this.m_LoadType = 0;
+                        this.m_LastProgress = 0;
+                        this.m_BytesFullPath = null;
+                    }
+                    else
+                    {
+                        this.m_LoadResourceAgentHelperErrorEventHandler(this,
+    new LoadResourceAgentHelperErrorEventArgs(LoadResourceStatus.NotExist,this.m_WWW.error));
+                    }
+                }
+                else if(this.m_WWW.progress!=this.m_LastProgress)
+                {
+                    this.m_LastProgress = this.m_WWW.progress;
+                    this.m_LoadResourceAgentHelperUpdateEventHandler(this,
+    new LoadResourceAgentHelperUpdateEventArgs(LoadResourceProgress.ReadResource,this.m_LastProgress));
                 }
             }
         }
 #endif
+        private void UpdateFileAssetBundleCreateRequest()
+        {
+            if (this.m_FileAssetBundleCreateRequest != null)
+            {
+                if (m_FileAssetBundleCreateRequest.isDone)
+                {
+                    AssetBundle assetBundle = this.m_FileAssetBundleCreateRequest.assetBundle;
+                    if (assetBundle != null)
+                    {
+                        AssetBundleCreateRequest oldFileAssetBundleCreateRequest = this.m_FileAssetBundleCreateRequest;
+                        this.m_LoadResourceAgentHelperReadFileCompleteEventHandler(this,
+                            new LoadResourceAgentHelperReadFileCompleteEventArgs(assetBundle));
+                        if (this.m_FileAssetBundleCreateRequest == oldFileAssetBundleCreateRequest)
+                        {
+                            this.m_FileAssetBundleCreateRequest = null;
+                            this.m_LastProgress = 0;
+                        }
+                    }
+                    else
+                    {
+                        this.m_LoadResourceAgentHelperErrorEventHandler(this,
+                            new LoadResourceAgentHelperErrorEventArgs(LoadResourceStatus.NotExist, 
+                            Utility.Text.Format("Can not load asset bundle from file '{0}' which is not a valid asset bundle.", m_FileFullPath)));
+                    }
+                }else if (this.m_FileAssetBundleCreateRequest.progress != this.m_LastProgress)
+                {
+                    this.m_LastProgress = this.m_FileAssetBundleCreateRequest.progress;
+                    this.m_LoadResourceAgentHelperUpdateEventHandler(this,
+                        new LoadResourceAgentHelperUpdateEventArgs(LoadResourceProgress.LoadResource,this.m_LastProgress));
+                }
+            }
+        }
+
+        private void UpdateBytesAssetBundleCreateRequest()
+        {
+            if (m_BytesAssetBundleCreateRequest != null)
+            {
+                if (m_BytesAssetBundleCreateRequest.isDone)
+                {
+                    AssetBundle assetBundle = m_BytesAssetBundleCreateRequest.assetBundle;
+                    if (assetBundle != null)
+                    {
+                        AssetBundleCreateRequest oldBytesAssetBundleCreateRequest = m_BytesAssetBundleCreateRequest;
+                        m_LoadResourceAgentHelperParseBytesCompleteEventHandler(this, new LoadResourceAgentHelperParseBytesCompleteEventArgs(assetBundle));
+                        if (m_BytesAssetBundleCreateRequest == oldBytesAssetBundleCreateRequest)
+                        {
+                            m_BytesAssetBundleCreateRequest = null;
+                            m_LastProgress = 0f;
+                        }
+                    }
+                    else
+                    {
+                        m_LoadResourceAgentHelperErrorEventHandler(this, new LoadResourceAgentHelperErrorEventArgs(LoadResourceStatus.NotExist, "Can not load asset bundle from memory which is not a valid asset bundle."));
+                    }
+                }
+                else if (m_BytesAssetBundleCreateRequest.progress != m_LastProgress)
+                {
+                    m_LastProgress = m_BytesAssetBundleCreateRequest.progress;
+                    m_LoadResourceAgentHelperUpdateEventHandler(this, new LoadResourceAgentHelperUpdateEventArgs(LoadResourceProgress.LoadResource, m_BytesAssetBundleCreateRequest.progress));
+                }
+            }
+        }
+
+        private void UpdateAssetBundleRequest()
+        {
+            if (this.m_AssetBundleRequest != null)
+            {
+                if (this.m_AssetBundleRequest.isDone)
+                {
+                    if (this.m_AssetBundleRequest.asset != null)
+                    {
+                        this.m_LoadResourceAgentHelperLoadCompleteEventHandler(this,new LoadResourceAgentHelperLoadCompleteEventArgs(this.m_AssetBundleRequest.asset));
+                        this.m_AssetBundleRequest = null;
+                        this.m_AssetName = null;
+                        this.m_LastProgress = 0;
+                    }
+                    else
+                    {
+                        this.m_LoadResourceAgentHelperErrorEventHandler(this,new LoadResourceAgentHelperErrorEventArgs(LoadResourceStatus.AssetError,Utility.Text.Format("Can not load asset '{0}' from asset bundle which is not exist.", m_AssetName)));
+                    }
+                }else if (this.m_LastProgress != this.m_AssetBundleRequest.progress)
+                {
+                    this.m_LastProgress = this.m_AssetBundleRequest.progress;
+                    this.m_LoadResourceAgentHelperUpdateEventHandler(this,new LoadResourceAgentHelperUpdateEventArgs(LoadResourceProgress.LoadAsset,this.m_LastProgress));
+                }
+            }
+        }
+
+        private void UpdateAsyncOperation()
+        {
+            if (this.m_AsyncOperation != null)
+            {
+                if (m_AsyncOperation.isDone)
+                {
+                    if (m_AsyncOperation.allowSceneActivation)
+                    {
+                        m_LoadResourceAgentHelperLoadCompleteEventHandler(this, new LoadResourceAgentHelperLoadCompleteEventArgs(new SceneAsset()));
+                        m_AssetName = null;
+                        m_LastProgress = 0f;
+                        m_AsyncOperation = null;
+                    }
+                    else
+                    {
+                        m_LoadResourceAgentHelperErrorEventHandler(this, new LoadResourceAgentHelperErrorEventArgs(LoadResourceStatus.AssetError, Utility.Text.Format("Can not load scene asset '{0}' from asset bundle.", m_AssetName)));
+                    }
+                }
+                else if (m_AsyncOperation.progress != m_LastProgress)
+                {
+                    m_LastProgress = m_AsyncOperation.progress;
+                    m_LoadResourceAgentHelperUpdateEventHandler(this, new LoadResourceAgentHelperUpdateEventArgs(LoadResourceProgress.LoadScene, m_AsyncOperation.progress));
+                }
+            }
+        }
+        
         
     }
 }

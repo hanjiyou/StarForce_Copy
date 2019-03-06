@@ -222,7 +222,7 @@ if(Physics.Raycast(ray, out raycastHit)){ rh.transform}
 到了系统错误。 isNetworkError或isHttpError属性将返回true，error属性将为“User Aborted”
 ⑤EscapeURL()些文本字符在URL中存在时具有特殊含义。 如果需要在URL参数中包含这些字符，则必须使用转义序列表示它们。
 6.UNITY_ANDROID宏定义运行情况包含两种①android端 ②unity切换到android平台
-
+7.加载AssetBundle的几种方式:https://www.cnblogs.com/MeowChocola/p/9022839.html
                                  二.框架模块详解
 1.Component详解(都属于MB的子类，能使用MB的生命周期方法)
 (1)GameFrameworkComponent,一切Component的基类，继承了MB,Awake()方法中将自身注册到GameEntry中

@@ -196,16 +196,6 @@ namespace UnityGameFramework.Runtime
             }
         }
 
-        /// <summary>
-        /// 获取资源组数量。
-        /// </summary>
-        public int ResourceGroupCount
-        {
-            get
-            {
-                return m_ResourceManager.ResourceGroupCount;
-            }
-        }
 
         /// <summary>
         /// 获取或设置资源更新下载地址。
