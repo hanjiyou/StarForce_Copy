@@ -1,3 +1,5 @@
+ 常见问题:
+ 1.git当工程过于缓慢，提示templates not found:https://blog.csdn.net/zhaochengxu/article/details/78952496
                            C#相关总结
 1.partial关键词修饰局部类，其中一个类文件继承MB,别的文件都能使用MB的生命周期方法
 2.通过csc生成类库步骤
