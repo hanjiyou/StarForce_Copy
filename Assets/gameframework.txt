@@ -562,3 +562,9 @@ ReadOnlyPath
 (13)ResourceUpdater:资源更新器
  (13.1)UpdateInfo:更新信息
 (14)VersionListProcessor:版本资源列表处理器
+7.6 ResourceManager的事件执行过程(以ResourceUpdateFailure为例)
+(1)从高到底绑定过程: ①将RC的OnResourceUpdateFailure绑定给RM的ResourceUpdateFailure
+②事件ResourceUpdateFailure对应的委托m_ResourceUpdateFailureEventHandler执行是在OnUpdaterResourceUpdateFailure()方法中
+③OnUpdaterResourceUpdateFailure()方法被绑定给ResourceUpdater的自定义委托ResourceUpdateFailure
+④RU ResourceUpdateFailure委托执行是在RU.OnDownloadFailure中
+(2)从低到高执行过程:RU.OnDownloadFailure->RU.ResourceUpdateFailure->RM.OnUpdaterResourceUpdateFailure->RM.m_ResourceUpdateFailureEventHandler->RC.OnResourceUpdateFailure()
