@@ -1,3 +1,5 @@
+using System;
+using System.Text;
 using GameFramework;
 using GameFramework.Download;
 using GameFramework.ObjectPool;
@@ -14,8 +16,8 @@ namespace UnityGameFramework.Runtime
     public class ResourceComponent:GameFrameworkComponent
     {
         private const int DefaultPriority = 0;
-        
-        private IResourceManager m_ResourceManager=null;
+
+        private IResourceManager m_ResourceManager = null;
         private EventComponent m_EventComponent = null;
         private bool m_EditorResourceMode = false;
         private bool m_ForceUnloadUnusedAssets = false;
@@ -27,7 +29,6 @@ namespace UnityGameFramework.Runtime
 
         [SerializeField]
         private ResourceMode m_ResourceMode = ResourceMode.Package;
-        
 
         [SerializeField]
         private ReadWritePathType m_ReadWritePathType = ReadWritePathType.Unspecified;
@@ -58,9 +59,15 @@ namespace UnityGameFramework.Runtime
 
         [SerializeField]
         private int m_ResourcePriority = 0;
-        
+
         [SerializeField]
         private string m_UpdatePrefixUri = null;
+
+        [SerializeField]
+        private int m_UpdateFileCacheLength = 1024 * 1024;
+
+        [SerializeField]
+        private int m_GenerateReadWriteListLength = 1024 * 1024;
 
         [SerializeField]
         private int m_UpdateRetryCount = 3;
@@ -83,7 +90,7 @@ namespace UnityGameFramework.Runtime
         [SerializeField]
         private int m_LoadResourceAgentHelperCount = 3;
         
-        /// <summary>
+         /// <summary>
         /// 获取资源只读路径。
         /// </summary>
         public string ReadOnlyPath
@@ -115,6 +122,7 @@ namespace UnityGameFramework.Runtime
                 return m_ResourceManager.ResourceMode;
             }
         }
+
         /// <summary>
         /// 获取资源读写路径类型。
         /// </summary>
@@ -196,7 +204,6 @@ namespace UnityGameFramework.Runtime
             }
         }
 
-
         /// <summary>
         /// 获取或设置资源更新下载地址。
         /// </summary>
@@ -209,6 +216,36 @@ namespace UnityGameFramework.Runtime
             set
             {
                 m_ResourceManager.UpdatePrefixUri = m_UpdatePrefixUri = value;
+            }
+        }
+
+        /// <summary>
+        /// 获取或设置更新文件缓存大小。
+        /// </summary>
+        public int UpdateFileCacheLength
+        {
+            get
+            {
+                return m_ResourceManager.UpdateFileCacheLength;
+            }
+            set
+            {
+                m_ResourceManager.UpdateFileCacheLength = m_UpdateFileCacheLength = value;
+            }
+        }
+
+        /// <summary>
+        /// 获取或设置每下载多少字节的资源，刷新一次资源列表。
+        /// </summary>
+        public int GenerateReadWriteListLength
+        {
+            get
+            {
+                return m_ResourceManager.GenerateReadWriteListLength;
+            }
+            set
+            {
+                m_ResourceManager.GenerateReadWriteListLength = m_GenerateReadWriteListLength = value;
             }
         }
 
@@ -412,6 +449,7 @@ namespace UnityGameFramework.Runtime
                 m_ResourceManager.ResourcePriority = m_ResourcePriority = value;
             }
         }
+        
         /// <summary>
         /// 游戏框架组件初始化。
         /// </summary>
@@ -439,8 +477,7 @@ namespace UnityGameFramework.Runtime
                 return;
             }
             m_EditorResourceMode = baseComponent.EditorResourceMode;
-            this.m_ResourceManager = this.m_EditorResourceMode
-                ? baseComponent.EditorResourceHelper
+            this.m_ResourceManager = this.m_EditorResourceMode? baseComponent.EditorResourceHelper
                 : GameFrameworkEntry.GetModule<IResourceManager>();
             if (null==this.m_ResourceManager)
             {
@@ -453,10 +490,10 @@ namespace UnityGameFramework.Runtime
             this.m_ResourceManager.ResourceUpdateSuccess += OnResourceUpdateSuccess;
             this.m_ResourceManager.ResourceUpdateFailure += OnResourceUpdateFailure;
             
-            m_ResourceManager.SetReadOnlyPath(Application.streamingAssetsPath);
+            this.m_ResourceManager.SetReadOnlyPath(Application.streamingAssetsPath);
             if (m_ReadWritePathType == ReadWritePathType.TemporaryCache)
             {
-                m_ResourceManager.SetReadWritePath(Application.temporaryCachePath);
+                this.m_ResourceManager.SetReadWritePath(Application.temporaryCachePath);
             }
             else
             {
@@ -465,29 +502,31 @@ namespace UnityGameFramework.Runtime
                     m_ReadWritePathType = ReadWritePathType.PersistentData;
                 }
 
-                m_ResourceManager.SetReadWritePath(Application.persistentDataPath);
+                this.m_ResourceManager.SetReadWritePath(Application.persistentDataPath);
             }
 
-            if (m_EditorResourceMode)
+            if (m_EditorResourceMode)//如果开启了编辑器资源模式 则return
             {
                 return;
             }
             
-            //SetResourceMode(m_ResourceMode);
-            m_ResourceManager.SetDownloadManager(GameFrameworkEntry.GetModule<IDownloadManager>());
-            m_ResourceManager.SetObjectPoolManager(GameFrameworkEntry.GetModule<IObjectPoolManager>());
-            m_ResourceManager.AssetAutoReleaseInterval = m_AssetAutoReleaseInterval;
-            m_ResourceManager.AssetCapacity = m_AssetCapacity;
-            m_ResourceManager.AssetExpireTime = m_AssetExpireTime;
-            m_ResourceManager.AssetPriority = m_AssetPriority;
-            m_ResourceManager.ResourceAutoReleaseInterval = m_ResourceAutoReleaseInterval;
-            m_ResourceManager.ResourceCapacity = m_ResourceCapacity;
-            m_ResourceManager.ResourceExpireTime = m_ResourceExpireTime;
-            m_ResourceManager.ResourcePriority = m_ResourcePriority;
+            SetResourceMode(m_ResourceMode);
+            this.m_ResourceManager.SetDownloadManager(GameFrameworkEntry.GetModule<IDownloadManager>());
+            this.m_ResourceManager.SetObjectPoolManager(GameFrameworkEntry.GetModule<IObjectPoolManager>());
+            this.m_ResourceManager.AssetAutoReleaseInterval = m_AssetAutoReleaseInterval;
+            this.m_ResourceManager.AssetCapacity = m_AssetCapacity;
+            this.m_ResourceManager.AssetExpireTime = m_AssetExpireTime;
+            this.m_ResourceManager.AssetPriority = m_AssetPriority;
+            this.m_ResourceManager.ResourceAutoReleaseInterval = m_ResourceAutoReleaseInterval;
+            this.m_ResourceManager.ResourceCapacity = m_ResourceCapacity;
+            this.m_ResourceManager.ResourceExpireTime = m_ResourceExpireTime;
+            this.m_ResourceManager.ResourcePriority = m_ResourcePriority;
             if (m_ResourceMode == ResourceMode.Updatable)
             {
-                m_ResourceManager.UpdatePrefixUri = m_UpdatePrefixUri;
-                m_ResourceManager.UpdateRetryCount = m_UpdateRetryCount;
+                this.m_ResourceManager.UpdatePrefixUri = m_UpdatePrefixUri;
+                this.m_ResourceManager.UpdateRetryCount = m_UpdateRetryCount;
+                this.m_ResourceManager.GenerateReadWriteListLength = m_GenerateReadWriteListLength;
+                this.m_ResourceManager.UpdateRetryCount = this.m_UpdateRetryCount;
             }
 
             m_ResourceHelper = Helper.CreateHelper(m_ResourceHelperTypeName, m_CustomResourceHelper);
@@ -513,10 +552,283 @@ namespace UnityGameFramework.Runtime
 
             for (int i = 0; i < m_LoadResourceAgentHelperCount; i++)
             {
-                //AddLoadResourceAgentHelper(i);//TODO
+                AddLoadResourceAgentHelper(i);
             }
         }
 
+        private void Update()
+        {
+            this.m_LastOperationElapse += Time.unscaledDeltaTime;
+            if (this.m_AsyncOperation == null &&(this.m_ForceUnloadUnusedAssets||this.m_PreorderUnloadUnusedAssets
+                &&this.m_LastOperationElapse>=this.m_UnloadUnusedAssetsInterval))//判断是否卸载未使用资源
+            {
+                Log.Info("Unload unused assets...");
+                this.m_ForceUnloadUnusedAssets = false;
+                this.m_PreorderUnloadUnusedAssets = false;
+                this.m_LastOperationElapse = 0f;
+                m_AsyncOperation = Resources.UnloadUnusedAssets();
+            }
+
+            if (this.m_AsyncOperation != null && this.m_AsyncOperation.isDone)
+            {
+                this.m_AsyncOperation = null;
+                if (this.m_PerformGCCollect)
+                {
+                    Log.Info("GC.Collect...");
+                    m_PerformGCCollect = false;
+                    GC.Collect();
+                }
+            }
+        }
+
+        /// <summary>
+        /// 设置资源模式
+        /// </summary>
+        /// <param name="resourceMode">资源模式</param>
+        public void SetResourceMode(ResourceMode resourceMode)
+        {
+            this.m_ResourceManager.SetResourceMode(resourceMode);
+        }
+
+        /// <summary>
+        /// 设置当前变体
+        /// </summary>
+        /// <param name="currentVariant"></param>
+        public void SetCurrentVariant(string currentVariant)
+        {
+            this.m_ResourceManager.SetCurrentVariant(!string.IsNullOrEmpty(currentVariant)?currentVariant:null);
+        }
+
+        /// <summary>
+        /// 设置解密资源回调函数
+        /// </summary>
+        /// <param name="decryptResourceCallback"></param>
+        /// <remarks>如果不设置，将使用默认的解密资源回调函数</remarks>
+        public void SetDecryptResourceCallback(DecryptResourceCallback decryptResourceCallback)
+        {
+            this.m_ResourceManager.SetDecryptResourceCallback(decryptResourceCallback);
+        }
+
+        /// <summary>
+        /// 预订执行释放未被使用的资源。
+        /// </summary>
+        /// <param name="performGCCollect">是否使用垃圾回收。</param>
+        public void UnloadUnusedAssets(bool performGCCollect)
+        {
+            this.m_PreorderUnloadUnusedAssets = true; //把预卸载未使用资源的标志位置为true update中轮询判断
+            if (performGCCollect)
+            {
+                this.m_PerformGCCollect = performGCCollect;
+            }
+        }
+
+        /// <summary>
+        /// 强制执行释放未被使用的资源。
+        /// </summary>
+        /// <param name="performGCCollect">是否使用垃圾回收。</param>
+        public void ForceUnloadUnusedAssets(bool performGCCollect)
+        {
+            m_ForceUnloadUnusedAssets = true;
+            if (performGCCollect)
+            {
+                m_PerformGCCollect = performGCCollect;
+            }
+        }
+
+        /// <summary>
+        /// 使用单机模式并初始化资源。
+        /// </summary>
+        /// <param name="initResourcesCompleteCallback">使用单机模式并初始化资源完成的回调函数。</param>
+        public void InitResource(InitResourcesCompleteCallback initResourcesCompleteCallback)
+        {
+            this.m_ResourceManager.InitResources(initResourcesCompleteCallback);
+        }
+
+        /// <summary>
+        /// 使用可更新模式并检查版本资源列表
+        /// </summary>
+        /// <param name="latestInternalResourceVersion"></param>
+        /// <returns>检查版本资源列表结果。</returns>
+        public CheckVersionListResult CheckVersionList(int latestInternalResourceVersion)
+        {
+            return this.m_ResourceManager.CheckVersionList(latestInternalResourceVersion);
+        }
+        
+        /// <summary>
+        /// 使用可更新模式并更新版本资源列表。
+        /// </summary>
+        /// <param name="versionListLength">版本资源列表大小。</param>
+        /// <param name="versionListHashCode">版本资源列表哈希值。</param>
+        /// <param name="versionListZipLength">版本资源列表压缩后大小。</param>
+        /// <param name="versionListZipHashCode">版本资源列表压缩后哈希值。</param>
+        /// <param name="updateVersionListCallbacks">版本资源列表更新回调函数集。</param>
+        public void UpdateVersionList(int versionListLength, int versionListHashCode, int versionListZipLength, int versionListZipHashCode, UpdateVersionListCallbacks updateVersionListCallbacks)
+        {
+            m_ResourceManager.UpdateVersionList(versionListLength, versionListHashCode, versionListZipLength, versionListZipHashCode, updateVersionListCallbacks);
+        }
+        
+        /// <summary>
+        /// 使用可更新模式并检查资源。
+        /// </summary>
+        /// <param name="checkResourcesCompleteCallback">使用可更新模式并检查资源完成的回调函数。</param>
+        public void CheckResources(CheckResourcesCompleteCallback checkResourcesCompleteCallback)
+        {
+            m_ResourceManager.CheckResources(checkResourcesCompleteCallback);
+        }
+        
+        /// <summary>
+        /// 使用可更新模式并更新资源。
+        /// </summary>
+        /// <param name="updateResourcesCompleteCallback">使用可更新模式并更新资源全部完成的回调函数。</param>
+        public void UpdateResources(UpdateResourcesCompleteCallback updateResourcesCompleteCallback)
+        {
+            m_ResourceManager.UpdateResources(updateResourcesCompleteCallback);
+        }
+        
+        /// <summary>
+        /// 检查资源是否存在。
+        /// </summary>
+        /// <param name="assetName">要检查资源的名称。</param>
+        /// <returns>资源是否存在。</returns>
+        public bool HasAsset(string assetName)
+        {
+            return m_ResourceManager.HasAsset(assetName);
+        }
+        
+        /// <summary>
+        /// 异步加载资源。
+        /// </summary>
+        /// <param name="assetName">要加载资源的名称。</param>
+        /// <param name="loadAssetCallbacks">加载资源回调函数集。</param>
+        public void LoadAsset(string assetName, LoadAssetCallbacks loadAssetCallbacks)
+        {
+            LoadAsset(assetName, null, DefaultPriority, loadAssetCallbacks, null);
+        }
+
+        /// <summary>
+        /// 异步加载资源。
+        /// </summary>
+        /// <param name="assetName">要加载资源的名称。</param>
+        /// <param name="assetType">要加载资源的类型。</param>
+        /// <param name="loadAssetCallbacks">加载资源回调函数集。</param>
+        public void LoadAsset(string assetName, Type assetType, LoadAssetCallbacks loadAssetCallbacks)
+        {
+            LoadAsset(assetName, assetType, DefaultPriority, loadAssetCallbacks, null);
+        }
+
+        /// <summary>
+        /// 异步加载资源。
+        /// </summary>
+        /// <param name="assetName">要加载资源的名称。</param>
+        /// <param name="priority">加载资源的优先级。</param>
+        /// <param name="loadAssetCallbacks">加载资源回调函数集。</param>
+        public void LoadAsset(string assetName, int priority, LoadAssetCallbacks loadAssetCallbacks)
+        {
+            LoadAsset(assetName, null, priority, loadAssetCallbacks, null);
+        }
+
+        /// <summary>
+        /// 异步加载资源。
+        /// </summary>
+        /// <param name="assetName">要加载资源的名称。</param>
+        /// <param name="loadAssetCallbacks">加载资源回调函数集。</param>
+        /// <param name="userData">用户自定义数据。</param>
+        public void LoadAsset(string assetName, LoadAssetCallbacks loadAssetCallbacks, object userData)
+        {
+            LoadAsset(assetName, null, DefaultPriority, loadAssetCallbacks, userData);
+        }
+
+        /// <summary>
+        /// 异步加载资源。
+        /// </summary>
+        /// <param name="assetName">要加载资源的名称。</param>
+        /// <param name="assetType">要加载资源的类型。</param>
+        /// <param name="priority">加载资源的优先级。</param>
+        /// <param name="loadAssetCallbacks">加载资源回调函数集。</param>
+        public void LoadAsset(string assetName, Type assetType, int priority, LoadAssetCallbacks loadAssetCallbacks)
+        {
+            LoadAsset(assetName, assetType, priority, loadAssetCallbacks, null);
+        }
+
+        /// <summary>
+        /// 异步加载资源。
+        /// </summary>
+        /// <param name="assetName">要加载资源的名称。</param>
+        /// <param name="assetType">要加载资源的类型。</param>
+        /// <param name="loadAssetCallbacks">加载资源回调函数集。</param>
+        /// <param name="userData">用户自定义数据。</param>
+        public void LoadAsset(string assetName, Type assetType, LoadAssetCallbacks loadAssetCallbacks, object userData)
+        {
+            LoadAsset(assetName, assetType, DefaultPriority, loadAssetCallbacks, userData);
+        }
+
+        /// <summary>
+        /// 异步加载资源。
+        /// </summary>
+        /// <param name="assetName">要加载资源的名称。</param>
+        /// <param name="priority">加载资源的优先级。</param>
+        /// <param name="loadAssetCallbacks">加载资源回调函数集。</param>
+        /// <param name="userData">用户自定义数据。</param>
+        public void LoadAsset(string assetName, int priority, LoadAssetCallbacks loadAssetCallbacks, object userData)
+        {
+            LoadAsset(assetName, null, priority, loadAssetCallbacks, userData);
+        }
+        
+        /// <summary>
+        /// 异步加载资源。
+        /// </summary>
+        /// <param name="assetName">要加载资源的名称。</param>
+        /// <param name="assetType">要加载资源的类型。</param>
+        /// <param name="priority">加载资源的优先级。</param>
+        /// <param name="loadAssetCallbacks">加载资源回调函数集。</param>
+        /// <param name="userData">用户自定义数据。</param>
+        public void LoadAsset(string assetName, Type assetType, int priority, LoadAssetCallbacks loadAssetCallbacks, object userData)
+        {
+            if (string.IsNullOrEmpty(assetName))
+            {
+                Log.Error("Asset name is invalid.");
+                return;
+            }
+
+            if (!assetName.StartsWith("Assets/"))
+            {
+                Log.Error("Asset name '{0}' is invalid.", assetName);
+                return;
+            }
+
+            m_ResourceManager.LoadAsset(assetName, assetType, priority, loadAssetCallbacks, userData);
+        }
+        
+        /// <summary>
+        /// 卸载资源。
+        /// </summary>
+        /// <param name="asset">要卸载的资源。</param>
+        public void UnloadAsset(object asset)
+        {
+            m_ResourceManager.UnloadAsset(asset);
+        }
+
+        /// <summary>
+        /// 增加加载资源代理辅助器
+        /// </summary>
+        /// <param name="index"></param>
+        private void AddLoadResourceAgentHelper(int index)
+        {
+            LoadResourceAgentHelperBase loadResourceAgentHelper = Helper.CreateHelper(m_LoadResourceAgentHelperTypeName,
+                m_CustomLoadResourceAgentHelper, index);
+            if (loadResourceAgentHelper == null)
+            {
+                Log.Error("Can not create load resource agent helper.");
+                return;
+            }
+            loadResourceAgentHelper.name=Utility.Text.Format("Load Resource Agent Helper - {0}", index.ToString());
+            Transform transform = loadResourceAgentHelper.transform;
+            transform.SetParent(m_InstanceRoot);
+            transform.localScale = Vector3.one;
+            
+            this.m_ResourceManager.AddLoadResourceAgentHelper(loadResourceAgentHelper);
+        }
+        
         private void OnResourceUpdateStart(object sender, GameFramework.Resource.ResourceUpdateStartEventArgs e)
         {
             this.m_EventComponent.Fire(this,ReferencePool.Acquire<ResourceUpdateStartEventArgs>().Fill(e));

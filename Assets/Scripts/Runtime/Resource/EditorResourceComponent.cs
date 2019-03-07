@@ -573,12 +573,21 @@ namespace UnityGameFramework.Runtime
             throw new NotSupportedException("UpdateResources");
         }
 
+        /// <summary>
+        /// 检查资源是否存在。
+        /// </summary>
+        /// <param name="assetName">要检查资源的名称。</param>
+        /// <returns>资源是否存在。</returns>
         public bool HasAsset(string assetName)
         {
-            throw new NotImplementedException();
+#if UNITY_EDITOR
+            return UnityEditor.AssetDatabase.LoadMainAssetAtPath(assetName) != null;
+#else
+            return false;
+#endif
         }
 
-                /// <summary>
+        /// <summary>
         /// 异步加载资源。
         /// </summary>
         /// <param name="assetName">要加载资源的名称。</param>
