@@ -568,3 +568,5 @@ ReadOnlyPath
 ③OnUpdaterResourceUpdateFailure()方法被绑定给ResourceUpdater的自定义委托ResourceUpdateFailure
 ④RU ResourceUpdateFailure委托执行是在RU.OnDownloadFailure中
 (2)从低到高执行过程:RU.OnDownloadFailure->RU.ResourceUpdateFailure->RM.OnUpdaterResourceUpdateFailure->RM.m_ResourceUpdateFailureEventHandler->RC.OnResourceUpdateFailure()
+
+8.UI模块
