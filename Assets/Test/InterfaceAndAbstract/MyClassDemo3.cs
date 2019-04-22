@@ -11,10 +11,15 @@ namespace Test.InterfaceAndAbstract
             get { return null; }
             
         }
-
         public override int Count
         {
             get { return this._count; }
         }
+#if DEBUG
+#else
+        
+    #endif
+
     }
+
 }
