@@ -1,0 +1,225 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:include schemaLocation="EnumType.xsd"/>
+  <xs:element name="BuildInfo">
+    <xs:complexType>
+      <xs:all>
+        
+        <xs:element name="Scences">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element maxOccurs="unbounded" name="Scence">
+                <xs:complexType>
+                  <xs:simpleContent>
+                    <xs:extension base="xs:string">
+                      <xs:attribute name="explain" type="xs:string" use="optional" />
+                    </xs:extension>
+                  </xs:simpleContent>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+            <xs:attribute name="explain" type="xs:string" use="optional" />
+          </xs:complexType>
+        </xs:element>
+        
+        <xs:element name="PackName">
+          <xs:complexType>
+            <xs:simpleContent>
+              <xs:extension base="xs:string">
+                <xs:attribute name="explain" type="xs:string" use="optional" />
+              </xs:extension>
+            </xs:simpleContent>
+          </xs:complexType>
+        </xs:element>
+        
+        <xs:element name="Version">
+          <xs:complexType>
+            <xs:simpleContent>
+              <xs:extension base="xs:string">
+                <xs:attribute name="explain" type="xs:string" use="optional" />
+              </xs:extension>
+            </xs:simpleContent>
+          </xs:complexType>
+        </xs:element>
+        
+        <xs:element name="BundleVersionCode">
+          <xs:complexType>
+            <xs:simpleContent>
+              <xs:extension base="xs:unsignedByte">
+                <xs:attribute name="explain" type="xs:string" use="optional" />
+              </xs:extension>
+            </xs:simpleContent>
+          </xs:complexType>
+        </xs:element>
+        
+        <xs:element name="SdkVersions" default="0">
+          <xs:complexType>
+            <xs:simpleContent>
+              <xs:extension base="xs:int">
+                <xs:attribute name="explain" type="xs:string" use="optional" />
+                <xs:attribute name="min" type="xs:int" use="required" />
+                <xs:attribute name="max" type="xs:int" use="required" />
+                <xs:attribute name="default" type="xs:int" use="required" />
+              </xs:extension>
+            </xs:simpleContent>
+          </xs:complexType>
+        </xs:element>
+        
+        <xs:element name="TargetSdkVersion" default="0">
+          <xs:complexType>
+            <xs:simpleContent>
+              <xs:extension base="xs:int">
+                <xs:attribute name="explain" type="xs:string" use="optional" />
+                <xs:attribute name="min" type="xs:int" use="required" />
+                <xs:attribute name="max" type="xs:int" use="required" />
+                <xs:attribute name="default" type="xs:int" use="required" />
+              </xs:extension>
+            </xs:simpleContent>
+          </xs:complexType>
+        </xs:element>
+        
+        <!--<xs:element name="TargetDevices">
+          <xs:complexType>
+            <xs:attribute name="explain" type="xs:string" use="optional" />
+            <xs:attributeGroup ref="TargetDeviceEnumAttributeGroup"/>
+          </xs:complexType>
+        </xs:element>-->
+
+        <xs:element name="TargetDevice" type="ChildMountainBikeSizes" />
+          <!--<xs:complexType>
+            <xs:complexContent>
+              <xs:extension base="TargetDeviceEnum">
+                <
+                <xs:attribute name="explain" type="xs:string" use="optional"/>
+                <xs:attribute name="default" type="TargetDeviceEnum" use="optional" />
+              </xs:extension>
+            </xs:complexContent>
+          </xs:complexType>-->
+        
+        
+        
+        <xs:element name="Scriptingimplementation" default="IL2CPP">
+          <xs:complexType>
+            <xs:simpleContent>
+              <xs:extension base="ScriptingImplementationEnum">
+                <xs:attribute name="explain" type="xs:string" use="optional" />
+                <xs:attribute name="default" type="ScriptingImplementationEnum" use="optional" default="IL2CPP" />
+              </xs:extension>
+            </xs:simpleContent>
+          </xs:complexType>
+        </xs:element>
+        
+        <xs:element name="ApiCompatibilityLevel" default="NET_2_0_Subset">
+          <xs:complexType>
+            <xs:simpleContent>
+              <xs:extension base="ApiCompatibilityLevelEnum">
+                <xs:attribute name="explain" type="xs:string" use="optional" />
+                <xs:attribute name="default" type="ApiCompatibilityLevelEnum" use="optional" default="NET_2_0_Subset" />
+              </xs:extension>
+            </xs:simpleContent>
+          </xs:complexType>
+        </xs:element>
+        
+        <xs:element name="InternetAccess" default="true" minOccurs="0">
+          <xs:complexType>
+            <xs:simpleContent>
+              <xs:extension base="xs:boolean">
+                <xs:attribute name="explain" type="xs:string" use="optional" />
+                <xs:attribute name="default" type="xs:boolean" use="optional" />
+              </xs:extension>
+            </xs:simpleContent>
+          </xs:complexType>
+        </xs:element>
+        
+        <xs:element name="TextureCompression" default="Generic" minOccurs="0">
+          <xs:complexType>
+            <xs:simpleContent>
+              <xs:extension base="MobileTextureSubtargetEnum">
+                <xs:attribute name="explain" type="xs:string" use="optional" />
+                <xs:attribute name="default" type="MobileTextureSubtargetEnum" use="optional" />
+              </xs:extension>
+            </xs:simpleContent>
+          </xs:complexType>
+        </xs:element>
+        
+        <xs:element name="AndroidBuildSystem" default="Internal" minOccurs="0">
+          <xs:complexType>
+            <xs:simpleContent>
+              <xs:extension base="AndroidBuildSystemEnum">
+                <xs:attribute name="explain" type="xs:string" use="optional" />
+                <xs:attribute name="default" type="AndroidBuildSystemEnum" use="optional" />
+              </xs:extension>
+            </xs:simpleContent>
+          </xs:complexType>
+        </xs:element>
+        
+        <xs:element name="Development" default="false">
+          <xs:complexType>
+            <xs:simpleContent>
+              <xs:extension base="xs:boolean">
+                <xs:attribute name="explain" type="xs:string" use="optional" />
+                <xs:attribute name="default" type="xs:boolean" use="optional" />
+              </xs:extension>
+            </xs:simpleContent>
+          </xs:complexType>
+        </xs:element>
+        
+        <xs:element name="ConnectProfiler" default="false">
+          <xs:complexType>
+            <xs:simpleContent>
+              <xs:extension base="xs:boolean">
+                <xs:attribute name="explain" type="xs:string" use="optional" />
+                <xs:attribute name="default" type="xs:boolean" use="optional" />
+              </xs:extension>
+            </xs:simpleContent>
+          </xs:complexType>
+        </xs:element>
+        
+        <xs:element name="ScriptsDebuggers" default="false">
+          <xs:complexType>
+            <xs:simpleContent>
+              <xs:extension base="xs:boolean">
+                <xs:attribute name="explain" type="xs:string" use="optional" />
+                <xs:attribute name="default" type="xs:boolean" use="optional" />
+              </xs:extension>
+            </xs:simpleContent>
+          </xs:complexType>
+        </xs:element>
+        
+        <xs:element name="Path">
+          <xs:complexType>
+            <xs:simpleContent>
+              <xs:extension base="Path">
+                <xs:attribute name="explain" type="xs:string" use="optional" />
+                <xs:attribute name="default" type="AndroidETC2FallbackEnum" use="optional" />
+              </xs:extension>
+            </xs:simpleContent>
+          </xs:complexType>
+        </xs:element>
+        
+        <xs:element name="ETC2Fallback" default="Quality32Bit" minOccurs="0">
+          <xs:complexType>
+            <xs:simpleContent>
+              <xs:extension base="AndroidETC2FallbackEnum">
+                <xs:attribute name="explain" type="xs:string" use="optional" />
+                <xs:attribute name="default" type="AndroidETC2FallbackEnum" use="optional" />
+              </xs:extension>
+            </xs:simpleContent>
+          </xs:complexType>
+        </xs:element>
+
+        <xs:element name="ScriptingDefineSymbols" minOccurs="0">
+          <xs:complexType>
+            <xs:simpleContent>
+              <xs:extension base="xs:string">
+                <xs:attribute name="explain" type="xs:string" use="optional" />
+                <xs:attribute name="default" type="AndroidETC2FallbackEnum" use="optional" />
+              </xs:extension>
+            </xs:simpleContent>
+          </xs:complexType>
+        </xs:element>
+        
+      </xs:all>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
