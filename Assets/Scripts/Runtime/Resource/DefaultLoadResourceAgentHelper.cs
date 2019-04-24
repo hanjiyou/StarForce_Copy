@@ -1,6 +1,6 @@
 using System;
 using GameFramework.Resource;
-using UnityEditor.VersionControl;
+//using UnityEditor.VersionControl;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 #if UNITY_5_4_OR_NEWER

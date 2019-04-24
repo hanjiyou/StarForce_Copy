@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using Test.IEnumeratorFolder;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class ExecuteEnumerator : MonoBehaviour {
 
@@ -15,6 +17,11 @@ public class ExecuteEnumerator : MonoBehaviour {
 		{
 			Debug.Log(item);
 		}
+		PointerEventData ped=new PointerEventData(EventSystem.current);
+		ped.position=Input.mousePosition;
+		List<RaycastResult> results=new List<RaycastResult>();
+		GraphicRaycaster raycaster=null;
+		raycaster.Raycast(ped,results);
 		//方法2
 //		MyIEnumerator myIEnumerator = myIEnumerable.GetEnumerator();
 //		while (myIEnumerator.MoveNext())
